@@ -2,95 +2,134 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* 
+ * Crop Wise Design System
+ * ========================
+ * A high-contrast, outdoor-readable design for farmers
+ * Earthy tones with bold accents for agricultural context
+ */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core backgrounds - warm cream for outdoor readability */
+    --background: 45 30% 97%;
+    --foreground: 25 30% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card surfaces */
+    --card: 45 40% 99%;
+    --card-foreground: 25 30% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Popover/Modal surfaces */
+    --popover: 45 40% 99%;
+    --popover-foreground: 25 30% 12%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Deep Forest Green (trust, growth, agriculture) */
+    --primary: 145 50% 28%;
+    --primary-foreground: 45 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Warm Earth Brown */
+    --secondary: 30 35% 88%;
+    --secondary-foreground: 25 30% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted backgrounds */
+    --muted: 40 25% 92%;
+    --muted-foreground: 25 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Golden Harvest (attention, alerts) */
+    --accent: 42 90% 55%;
+    --accent-foreground: 25 30% 12%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive - Warning Red */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Success - Vibrant Green */
+    --success: 142 71% 35%;
+    --success-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    /* Warning - Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 25 30% 12%;
 
-    --sidebar-background: 0 0% 98%;
+    /* Info - Sky Blue */
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Borders & Inputs */
+    --border: 35 25% 82%;
+    --input: 35 25% 82%;
+    --ring: 145 50% 28%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    --radius: 0.75rem;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Sidebar */
+    --sidebar-background: 145 40% 22%;
+    --sidebar-foreground: 45 40% 95%;
+    --sidebar-primary: 42 90% 55%;
+    --sidebar-primary-foreground: 25 30% 12%;
+    --sidebar-accent: 145 35% 30%;
+    --sidebar-accent-foreground: 45 40% 95%;
+    --sidebar-border: 145 30% 35%;
+    --sidebar-ring: 42 90% 55%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Crop Wise specific tokens */
+    --crop-leaf: 120 45% 40%;
+    --crop-soil: 25 35% 30%;
+    --crop-water: 200 75% 50%;
+    --crop-sun: 45 95% 55%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 25 20% 10%;
+    --foreground: 45 30% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 25 20% 14%;
+    --card-foreground: 45 30% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 25 20% 14%;
+    --popover-foreground: 45 30% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 145 50% 45%;
+    --primary-foreground: 25 20% 10%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 30 20% 22%;
+    --secondary-foreground: 45 30% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 25 15% 20%;
+    --muted-foreground: 40 15% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 42 90% 50%;
+    --accent-foreground: 25 20% 10%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --success: 142 60% 40%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 85% 45%;
+    --warning-foreground: 25 20% 10%;
+
+    --info: 199 80% 55%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 25 15% 25%;
+    --input: 25 15% 25%;
+    --ring: 145 50% 45%;
+
+    --sidebar-background: 25 20% 8%;
+    --sidebar-foreground: 45 30% 90%;
+    --sidebar-primary: 42 90% 50%;
+    --sidebar-primary-foreground: 25 20% 10%;
+    --sidebar-accent: 25 15% 18%;
+    --sidebar-accent-foreground: 45 30% 90%;
+    --sidebar-border: 25 15% 20%;
+    --sidebar-ring: 42 90% 50%;
+
+    --crop-leaf: 120 40% 45%;
+    --crop-soil: 25 30% 45%;
+    --crop-water: 200 70% 55%;
+    --crop-sun: 45 90% 50%;
   }
 }
 
@@ -101,5 +140,89 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Large touch targets for farmers */
+  button, a, [role="button"] {
+    min-height: 44px;
+  }
+
+  /* High contrast focus states */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+/* Custom utility classes for Crop Wise */
+@layer utilities {
+  /* Icon button with large touch target */
+  .icon-btn {
+    @apply flex items-center justify-center min-w-[56px] min-h-[56px] rounded-xl transition-all active:scale-95;
+  }
+
+  /* Feature card for dashboard */
+  .feature-card {
+    @apply bg-card border-2 border-border rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow active:scale-[0.98];
+  }
+
+  /* High contrast text for outdoor visibility */
+  .text-outdoor {
+    @apply font-semibold tracking-wide;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-br from-primary to-primary/80;
+  }
+
+  .bg-gradient-success {
+    background: linear-gradient(135deg, hsl(var(--success)) 0%, hsl(142 60% 25%) 100%);
+  }
+
+  .bg-gradient-warning {
+    background: linear-gradient(135deg, hsl(var(--warning)) 0%, hsl(30 80% 45%) 100%);
+  }
+
+  /* Status indicators */
+  .status-dot {
+    @apply w-3 h-3 rounded-full;
+  }
+
+  .status-online {
+    @apply bg-success animate-pulse;
+  }
+
+  .status-offline {
+    @apply bg-muted-foreground;
+  }
+}
+
+/* Animation keyframes */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-gentle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out;
+}
+
+.animate-pulse-gentle {
+  animation: pulse-gentle 2s ease-in-out infinite;
 }
