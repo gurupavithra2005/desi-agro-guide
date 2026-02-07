@@ -2,25 +2,195 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+
+// Pages
+import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import CropRecommendation from "./pages/CropRecommendation";
+import Weather from "./pages/Weather";
+import MarketPrices from "./pages/MarketPrices";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Protected Route wrapper
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+// App Routes
+function AppRoutes() {
+  return (
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/auth" element={<Auth />} />
+
+      {/* Protected routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/crops"
+        element={
+          <ProtectedRoute>
+            <CropRecommendation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/weather"
+        element={
+          <ProtectedRoute>
+            <Weather />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/market"
+        element={
+          <ProtectedRoute>
+            <MarketPrices />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Placeholder routes for future features */}
+      <Route
+        path="/pests"
+        element={
+          <ProtectedRoute>
+            <ComingSoon title="Pest Detection" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fertilizer"
+        element={
+          <ProtectedRoute>
+            <ComingSoon title="Fertilizer Advice" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fields"
+        element={
+          <ProtectedRoute>
+            <ComingSoon title="My Fields" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendar"
+        element={
+          <ProtectedRoute>
+            <ComingSoon title="Crop Calendar" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/voice"
+        element={
+          <ProtectedRoute>
+            <ComingSoon title="Voice Assistant" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/community"
+        element={
+          <ProtectedRoute>
+            <ComingSoon title="Community" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/schemes"
+        element={
+          <ProtectedRoute>
+            <ComingSoon title="Government Schemes" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <ComingSoon title="Settings" />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 404 */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
+// Coming Soon placeholder component
+function ComingSoon({ title }: { title: string }) {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
+      <div className="text-6xl mb-4">🚧</div>
+      <h1 className="text-2xl font-bold text-foreground mb-2">{title}</h1>
+      <p className="text-muted-foreground text-center">
+        This feature is coming soon in Phase 2!
+      </p>
+      <a
+        href="/dashboard"
+        className="mt-6 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium"
+      >
+        Back to Dashboard
+      </a>
+    </div>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 
