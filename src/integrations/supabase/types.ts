@@ -14,6 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_chat_history: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_voice_input: boolean | null
+          language: string | null
+          role: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_voice_input?: boolean | null
+          language?: string | null
+          role: string
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_voice_input?: boolean | null
+          language?: string | null
+          role?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      crop_calendar_events: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          crop_id: string | null
+          description: string | null
+          event_type: string
+          field_id: string | null
+          id: string
+          is_completed: boolean | null
+          reminder_days_before: number | null
+          scheduled_date: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          crop_id?: string | null
+          description?: string | null
+          event_type: string
+          field_id?: string | null
+          id?: string
+          is_completed?: boolean | null
+          reminder_days_before?: number | null
+          scheduled_date: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          crop_id?: string | null
+          description?: string | null
+          event_type?: string
+          field_id?: string | null
+          id?: string
+          is_completed?: boolean | null
+          reminder_days_before?: number | null
+          scheduled_date?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crop_calendar_events_crop_id_fkey"
+            columns: ["crop_id"]
+            isOneToOne: false
+            referencedRelation: "crops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crop_calendar_events_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "farmer_fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crops: {
         Row: {
           category: string | null
@@ -131,6 +224,347 @@ export type Database = {
           },
         ]
       }
+      fertilizer_recommendations: {
+        Row: {
+          application_method: string | null
+          created_at: string
+          crop_id: string | null
+          growth_stage: string | null
+          id: string
+          k_recommendation_kg_per_ha: number | null
+          n_recommendation_kg_per_ha: number | null
+          notes_en: string | null
+          notes_hi: string | null
+          p_recommendation_kg_per_ha: number | null
+          soil_type: string | null
+          timing_days_after_sowing: number | null
+        }
+        Insert: {
+          application_method?: string | null
+          created_at?: string
+          crop_id?: string | null
+          growth_stage?: string | null
+          id?: string
+          k_recommendation_kg_per_ha?: number | null
+          n_recommendation_kg_per_ha?: number | null
+          notes_en?: string | null
+          notes_hi?: string | null
+          p_recommendation_kg_per_ha?: number | null
+          soil_type?: string | null
+          timing_days_after_sowing?: number | null
+        }
+        Update: {
+          application_method?: string | null
+          created_at?: string
+          crop_id?: string | null
+          growth_stage?: string | null
+          id?: string
+          k_recommendation_kg_per_ha?: number | null
+          n_recommendation_kg_per_ha?: number | null
+          notes_en?: string | null
+          notes_hi?: string | null
+          p_recommendation_kg_per_ha?: number | null
+          soil_type?: string | null
+          timing_days_after_sowing?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fertilizer_recommendations_crop_id_fkey"
+            columns: ["crop_id"]
+            isOneToOne: false
+            referencedRelation: "crops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_posts: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          crop_id: string | null
+          id: string
+          image_urls: string[] | null
+          is_answered: boolean | null
+          is_pinned: boolean | null
+          title: string
+          updated_at: string
+          upvotes: number | null
+          user_id: string
+          views: number | null
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string
+          crop_id?: string | null
+          id?: string
+          image_urls?: string[] | null
+          is_answered?: boolean | null
+          is_pinned?: boolean | null
+          title: string
+          updated_at?: string
+          upvotes?: number | null
+          user_id: string
+          views?: number | null
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          crop_id?: string | null
+          id?: string
+          image_urls?: string[] | null
+          is_answered?: boolean | null
+          is_pinned?: boolean | null
+          title?: string
+          updated_at?: string
+          upvotes?: number | null
+          user_id?: string
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_posts_crop_id_fkey"
+            columns: ["crop_id"]
+            isOneToOne: false
+            referencedRelation: "crops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_replies: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_best_answer: boolean | null
+          is_officer_reply: boolean | null
+          post_id: string | null
+          upvotes: number | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_best_answer?: boolean | null
+          is_officer_reply?: boolean | null
+          post_id?: string | null
+          upvotes?: number | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_best_answer?: boolean | null
+          is_officer_reply?: boolean | null
+          post_id?: string | null
+          upvotes?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_replies_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_upvotes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string | null
+          reply_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          reply_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          reply_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_upvotes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_upvotes_reply_id_fkey"
+            columns: ["reply_id"]
+            isOneToOne: false
+            referencedRelation: "forum_replies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      government_schemes: {
+        Row: {
+          benefits: string | null
+          created_at: string
+          description_bn: string | null
+          description_en: string | null
+          description_hi: string | null
+          description_kn: string | null
+          description_mr: string | null
+          description_pa: string | null
+          description_ta: string | null
+          description_te: string | null
+          eligibility: string | null
+          helpline: string | null
+          how_to_apply: string | null
+          icon_name: string | null
+          id: string
+          is_active: boolean | null
+          name_bn: string | null
+          name_en: string
+          name_hi: string | null
+          name_kn: string | null
+          name_mr: string | null
+          name_pa: string | null
+          name_ta: string | null
+          name_te: string | null
+          scheme_code: string
+          scheme_type: string
+          state: string | null
+          website_url: string | null
+        }
+        Insert: {
+          benefits?: string | null
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          description_hi?: string | null
+          description_kn?: string | null
+          description_mr?: string | null
+          description_pa?: string | null
+          description_ta?: string | null
+          description_te?: string | null
+          eligibility?: string | null
+          helpline?: string | null
+          how_to_apply?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          name_bn?: string | null
+          name_en: string
+          name_hi?: string | null
+          name_kn?: string | null
+          name_mr?: string | null
+          name_pa?: string | null
+          name_ta?: string | null
+          name_te?: string | null
+          scheme_code: string
+          scheme_type: string
+          state?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          benefits?: string | null
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          description_hi?: string | null
+          description_kn?: string | null
+          description_mr?: string | null
+          description_pa?: string | null
+          description_ta?: string | null
+          description_te?: string | null
+          eligibility?: string | null
+          helpline?: string | null
+          how_to_apply?: string | null
+          icon_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          name_bn?: string | null
+          name_en?: string
+          name_hi?: string | null
+          name_kn?: string | null
+          name_mr?: string | null
+          name_pa?: string | null
+          name_ta?: string | null
+          name_te?: string | null
+          scheme_code?: string
+          scheme_type?: string
+          state?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      market_prices: {
+        Row: {
+          change_percent: number | null
+          created_at: string
+          crop_id: string | null
+          crop_name: string
+          district: string | null
+          id: string
+          market_name: string
+          max_price: number
+          min_price: number
+          modal_price: number
+          previous_price: number | null
+          price_date: string
+          state: string
+          unit: string | null
+        }
+        Insert: {
+          change_percent?: number | null
+          created_at?: string
+          crop_id?: string | null
+          crop_name: string
+          district?: string | null
+          id?: string
+          market_name: string
+          max_price: number
+          min_price: number
+          modal_price: number
+          previous_price?: number | null
+          price_date?: string
+          state: string
+          unit?: string | null
+        }
+        Update: {
+          change_percent?: number | null
+          created_at?: string
+          crop_id?: string | null
+          crop_name?: string
+          district?: string | null
+          id?: string
+          market_name?: string
+          max_price?: number
+          min_price?: number
+          modal_price?: number
+          previous_price?: number | null
+          price_date?: string
+          state?: string
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_prices_crop_id_fkey"
+            columns: ["crop_id"]
+            isOneToOne: false
+            referencedRelation: "crops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -160,6 +594,86 @@ export type Database = {
           metadata?: Json | null
           title?: string
           type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pest_detections: {
+        Row: {
+          ai_response: Json | null
+          confidence_score: number | null
+          created_at: string
+          detected_pest: string | null
+          field_id: string | null
+          id: string
+          image_url: string | null
+          severity: string | null
+          treatment_recommendation: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_response?: Json | null
+          confidence_score?: number | null
+          created_at?: string
+          detected_pest?: string | null
+          field_id?: string | null
+          id?: string
+          image_url?: string | null
+          severity?: string | null
+          treatment_recommendation?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_response?: Json | null
+          confidence_score?: number | null
+          created_at?: string
+          detected_pest?: string | null
+          field_id?: string | null
+          id?: string
+          image_url?: string | null
+          severity?: string | null
+          treatment_recommendation?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pest_detections_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "farmer_fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          crop_name: string
+          id: string
+          is_active: boolean | null
+          target_price: number
+          triggered_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_type?: string
+          created_at?: string
+          crop_name: string
+          id?: string
+          is_active?: boolean | null
+          target_price: number
+          triggered_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          crop_name?: string
+          id?: string
+          is_active?: boolean | null
+          target_price?: number
+          triggered_at?: string | null
           user_id?: string
         }
         Relationships: []
