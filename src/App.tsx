@@ -15,6 +15,13 @@ import Weather from "./pages/Weather";
 import MarketPrices from "./pages/MarketPrices";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import FertilizerAdvice from "./pages/FertilizerAdvice";
+import PestDetection from "./pages/PestDetection";
+import GovernmentSchemes from "./pages/GovernmentSchemes";
+import VoiceAssistant from "./pages/VoiceAssistant";
+import Community from "./pages/Community";
+import MyFields from "./pages/MyFields";
+import CropCalendar from "./pages/CropCalendar";
 
 const queryClient = new QueryClient();
 
@@ -92,7 +99,7 @@ function AppRoutes() {
         path="/pests"
         element={
           <ProtectedRoute>
-            <ComingSoon title="Pest Detection" />
+            <PestDetection />
           </ProtectedRoute>
         }
       />
@@ -100,7 +107,7 @@ function AppRoutes() {
         path="/fertilizer"
         element={
           <ProtectedRoute>
-            <ComingSoon title="Fertilizer Advice" />
+            <FertilizerAdvice />
           </ProtectedRoute>
         }
       />
@@ -108,7 +115,7 @@ function AppRoutes() {
         path="/fields"
         element={
           <ProtectedRoute>
-            <ComingSoon title="My Fields" />
+            <MyFields />
           </ProtectedRoute>
         }
       />
@@ -116,7 +123,7 @@ function AppRoutes() {
         path="/calendar"
         element={
           <ProtectedRoute>
-            <ComingSoon title="Crop Calendar" />
+            <CropCalendar />
           </ProtectedRoute>
         }
       />
@@ -124,7 +131,7 @@ function AppRoutes() {
         path="/voice"
         element={
           <ProtectedRoute>
-            <ComingSoon title="Voice Assistant" />
+            <VoiceAssistant />
           </ProtectedRoute>
         }
       />
@@ -132,7 +139,7 @@ function AppRoutes() {
         path="/community"
         element={
           <ProtectedRoute>
-            <ComingSoon title="Community" />
+            <Community />
           </ProtectedRoute>
         }
       />
@@ -140,7 +147,7 @@ function AppRoutes() {
         path="/schemes"
         element={
           <ProtectedRoute>
-            <ComingSoon title="Government Schemes" />
+            <GovernmentSchemes />
           </ProtectedRoute>
         }
       />

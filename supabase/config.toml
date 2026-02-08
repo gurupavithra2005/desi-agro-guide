@@ -1,1 +1,7 @@
 project_id = "rvhrsrnvdpfgsnvypyxr"
+
+[functions.crop-advisor]
+verify_jwt = false
+
+[functions.ai-assistant]
+verify_jwt = false
