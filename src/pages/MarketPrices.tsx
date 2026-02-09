@@ -7,11 +7,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Label } from '@/components/ui/label';
 
 interface MarketPrice {
   id: string;
@@ -28,22 +30,33 @@ interface MarketPrice {
   change_percent: number | null;
 }
 
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Assam", "Bihar", "Chhattisgarh", "Gujarat", "Haryana",
+  "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
+  "Maharashtra", "Odisha", "Punjab", "Rajasthan", "Tamil Nadu", "Telangana",
+  "Uttar Pradesh", "Uttarakhand", "West Bengal"
+];
+
 export default function MarketPrices() {
   const { t } = useLanguage();
   const { toast } = useToast();
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
   const [prices, setPrices] = useState<MarketPrice[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [alertedCrops, setAlertedCrops] = useState<string[]>([]);
+  const [dataSource, setDataSource] = useState<'cached' | 'live_api'>('cached');
 
   useEffect(() => {
-    fetchPrices();
+    fetchPricesFromDB();
     if (user) fetchAlerts();
   }, [user]);
 
-  const fetchPrices = async () => {
+  // Initial load from database
+  const fetchPricesFromDB = async () => {
+    setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('market_prices')
@@ -55,6 +68,43 @@ export default function MarketPrices() {
       setPrices(data || []);
     } catch (error) {
       console.error('Failed to fetch prices:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch live prices from API via edge function
+  const fetchLivePrices = async () => {
+    if (!selectedState) {
+      toast({ variant: 'destructive', title: 'Select State', description: 'Please select a state to fetch live prices' });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-market-prices', {
+        body: {
+          state: selectedState,
+          district: selectedDistrict || undefined,
+          commodity: searchQuery || undefined,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        setPrices(data.data || []);
+        setDataSource(data.source);
+        toast({
+          title: data.source === 'live_api' ? '✅ Live Prices Updated' : '📦 Cached Prices',
+          description: `${data.total} prices found for ${selectedState}${selectedDistrict ? `, ${selectedDistrict}` : ''}`,
+        });
+      } else {
+        throw new Error(data?.error || 'Failed to fetch prices');
+      }
+    } catch (error: any) {
+      console.error('Failed to fetch live prices:', error);
+      toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to fetch prices' });
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +132,6 @@ export default function MarketPrices() {
     }
 
     const isAlerted = alertedCrops.includes(cropName);
-
     try {
       if (isAlerted) {
         const { error } = await supabase
@@ -111,20 +160,11 @@ export default function MarketPrices() {
   };
 
   const filteredPrices = prices.filter((price) => {
-    const matchesSearch = price.crop_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch = !searchQuery || 
+      price.crop_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       price.market_name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
-
-  // Group by crop
-  const uniqueCrops = [...new Set(filteredPrices.map(p => p.crop_name))];
-
-  const categories = [
-    { value: 'all', label: 'All' },
-    { value: 'grains', label: 'Grains' },
-    { value: 'vegetables', label: 'Vegetables' },
-    { value: 'oilseeds', label: 'Oilseeds' },
-  ];
 
   const pricesUp = filteredPrices.filter(p => (p.change_percent || 0) > 0).length;
   const pricesDown = filteredPrices.filter(p => (p.change_percent || 0) < 0).length;
@@ -133,30 +173,59 @@ export default function MarketPrices() {
     <PageContainer>
       <AppHeader title={t('marketPrices')} />
 
-      {/* Search */}
-      <PageSection>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            placeholder="Search crops or markets..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 h-12"
-          />
-        </div>
-      </PageSection>
+      {/* State & District Filter */}
+      <PageSection title="Search by Location">
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs mb-1 block">State</Label>
+              <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedDistrict(''); }}>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Select State" />
+                </SelectTrigger>
+                <SelectContent>
+                  {INDIAN_STATES.map((s) => (
+                    <SelectItem key={s} value={s}>{s}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs mb-1 block">District</Label>
+              <Input
+                placeholder="Enter district"
+                value={selectedDistrict}
+                onChange={(e) => setSelectedDistrict(e.target.value)}
+                className="h-10"
+              />
+            </div>
+          </div>
 
-      {/* Refresh Button */}
-      <PageSection>
-        <Button 
-          variant="outline" 
-          onClick={fetchPrices} 
-          className="w-full gap-2"
-          disabled={isLoading}
-        >
-          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-          Refresh Prices
-        </Button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              placeholder="Search crop name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 h-10"
+            />
+          </div>
+
+          <Button 
+            onClick={fetchLivePrices} 
+            className="w-full gap-2"
+            disabled={isLoading}
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            {isLoading ? 'Fetching Live Prices...' : 'Fetch Live Prices from Agmarknet'}
+          </Button>
+
+          {dataSource === 'live_api' && (
+            <Badge variant="outline" className="bg-success/10 text-success border-success/30">
+              ✅ Live data from Government API
+            </Badge>
+          )}
+        </div>
       </PageSection>
 
       {/* Market Summary */}
@@ -180,7 +249,7 @@ export default function MarketPrices() {
       </PageSection>
 
       {/* Price List */}
-      <PageSection title="Live Market Prices">
+      <PageSection title={`Market Prices (${filteredPrices.length})`}>
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map((i) => (
@@ -223,6 +292,9 @@ export default function MarketPrices() {
                           <MapPin className="w-3 h-3" />
                           <span>{price.market_name}, {price.state}</span>
                         </div>
+                        {price.district && (
+                          <p className="text-xs text-muted-foreground ml-4">{price.district}</p>
+                        )}
                         <div className="flex gap-2 mt-2 text-xs text-muted-foreground">
                           <span>Min: ₹{price.min_price.toLocaleString()}</span>
                           <span>•</span>
@@ -259,7 +331,7 @@ export default function MarketPrices() {
             <CardContent className="p-8 text-center">
               <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
               <p className="text-muted-foreground">No prices found</p>
-              <p className="text-sm text-muted-foreground mt-1">Try a different search term</p>
+              <p className="text-sm text-muted-foreground mt-1">Select a state and click "Fetch Live Prices"</p>
             </CardContent>
           </Card>
         </PageSection>
