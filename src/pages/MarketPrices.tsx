@@ -37,6 +37,17 @@ const INDIAN_STATES = [
   "Uttar Pradesh", "Uttarakhand", "West Bengal"
 ];
 
+const TN_DISTRICTS = [
+  "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore",
+  "Dharmapuri", "Dindigul", "Erode", "Kallakurichi", "Kanchipuram",
+  "Kanyakumari", "Karur", "Krishnagiri", "Madurai", "Mayiladuthurai",
+  "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai",
+  "Ramanathapuram", "Ranipet", "Salem", "Sivaganga", "Tenkasi",
+  "Thanjavur", "Theni", "Thiruvallur", "Thoothukudi", "Tiruchirappalli",
+  "Tirunelveli", "Tirupattur", "Tirupur", "Tiruvannamalai", "Tiruvarur",
+  "Vellore", "Villupuram", "Virudhunagar"
+];
+
 export default function MarketPrices() {
   const { t } = useLanguage();
   const { toast } = useToast();
@@ -52,17 +63,22 @@ export default function MarketPrices() {
   useEffect(() => {
     fetchPricesFromDB();
     if (user) fetchAlerts();
-  }, [user]);
+  }, [user, selectedState, selectedDistrict]);
 
   // Initial load from database
   const fetchPricesFromDB = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('market_prices')
         .select('*')
         .order('price_date', { ascending: false })
-        .limit(50);
+        .limit(200);
+
+      if (selectedState) query = query.eq('state', selectedState);
+      if (selectedDistrict) query = query.eq('district', selectedDistrict);
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setPrices(data || []);
@@ -192,12 +208,25 @@ export default function MarketPrices() {
             </div>
             <div>
               <Label className="text-xs mb-1 block">District</Label>
-              <Input
-                placeholder="Enter district"
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                className="h-10"
-              />
+              {selectedState === 'Tamil Nadu' ? (
+                <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Select District" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TN_DISTRICTS.map((d) => (
+                      <SelectItem key={d} value={d}>{d}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  placeholder="Enter district"
+                  value={selectedDistrict}
+                  onChange={(e) => setSelectedDistrict(e.target.value)}
+                  className="h-10"
+                />
+              )}
             </div>
           </div>
 
