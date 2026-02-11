@@ -22,6 +22,7 @@ import VoiceAssistant from "./pages/VoiceAssistant";
 import Community from "./pages/Community";
 import MyFields from "./pages/MyFields";
 import CropCalendar from "./pages/CropCalendar";
+import SoilCropGuide from "./pages/SoilCropGuide";
 
 const queryClient = new QueryClient();
 
@@ -148,6 +149,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <GovernmentSchemes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/soil-guide"
+        element={
+          <ProtectedRoute>
+            <SoilCropGuide />
           </ProtectedRoute>
         }
       />

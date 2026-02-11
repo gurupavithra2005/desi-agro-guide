@@ -5,11 +5,10 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { PageContainer, PageSection } from '@/components/layout/PageContainer';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -40,14 +39,38 @@ export default function PestDetection() {
   });
 
   const crops = [
-    { value: 'rice', label: 'Rice (धान)' },
-    { value: 'wheat', label: 'Wheat (गेहूं)' },
-    { value: 'cotton', label: 'Cotton (कपास)' },
-    { value: 'tomato', label: 'Tomato (टमाटर)' },
-    { value: 'brinjal', label: 'Brinjal (बैंगन)' },
-    { value: 'chilli', label: 'Chilli (मिर्च)' },
-    { value: 'potato', label: 'Potato (आलू)' },
-    { value: 'groundnut', label: 'Groundnut (मूंगफली)' },
+    { value: 'rice', label: 'Rice (Paddy) 🌾' },
+    { value: 'wheat', label: 'Wheat 🌾' },
+    { value: 'cotton', label: 'Cotton ☁️' },
+    { value: 'maize', label: 'Maize (Corn) 🌽' },
+    { value: 'sugarcane', label: 'Sugarcane 🎋' },
+    { value: 'groundnut', label: 'Groundnut 🥜' },
+    { value: 'soybean', label: 'Soybean 🫛' },
+    { value: 'ragi', label: 'Ragi (Finger Millet) 🌾' },
+    { value: 'bajra', label: 'Bajra (Pearl Millet) 🌾' },
+    { value: 'jowar', label: 'Jowar (Sorghum) 🌾' },
+    { value: 'tomato', label: 'Tomato 🍅' },
+    { value: 'brinjal', label: 'Brinjal 🍆' },
+    { value: 'chilli', label: 'Chilli 🌶️' },
+    { value: 'potato', label: 'Potato 🥔' },
+    { value: 'onion', label: 'Onion 🧅' },
+    { value: 'okra', label: 'Okra (Lady Finger) 🫒' },
+    { value: 'cauliflower', label: 'Cauliflower 🥦' },
+    { value: 'cabbage', label: 'Cabbage 🥬' },
+    { value: 'capsicum', label: 'Capsicum 🫑' },
+    { value: 'beans', label: 'Beans 🫘' },
+    { value: 'cucumber', label: 'Cucumber 🥒' },
+    { value: 'pumpkin', label: 'Pumpkin 🎃' },
+    { value: 'bitter_gourd', label: 'Bitter Gourd 🥒' },
+    { value: 'watermelon', label: 'Watermelon 🍉' },
+    { value: 'banana', label: 'Banana 🍌' },
+    { value: 'mango', label: 'Mango 🥭' },
+    { value: 'coconut', label: 'Coconut 🥥' },
+    { value: 'pomegranate', label: 'Pomegranate 🔴' },
+    { value: 'guava', label: 'Guava 🍐' },
+    { value: 'turmeric', label: 'Turmeric 🟡' },
+    { value: 'drumstick', label: 'Drumstick (Moringa) 🌿' },
+    { value: 'curry_leaves', label: 'Curry Leaves 🌿' },
   ];
 
   const affectedParts = [
@@ -62,6 +85,10 @@ export default function PestDetection() {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ variant: 'destructive', title: 'File too large', description: 'Please upload an image under 5MB' });
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target?.result as string);
@@ -71,17 +98,22 @@ export default function PestDetection() {
   };
 
   const handleAnalyze = async () => {
-    if (!formData.crop || !formData.symptoms) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Please describe the symptoms and select a crop' });
+    if (!formData.crop || (!formData.symptoms && !selectedImage)) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Please select a crop and describe symptoms or upload a photo' });
       return;
     }
 
     setIsLoading(true);
     try {
+      const requestData: any = { ...formData };
+      if (selectedImage) {
+        requestData.imageBase64 = selectedImage;
+      }
+
       const { data, error } = await supabase.functions.invoke('crop-advisor', {
         body: {
           type: 'pest_detection',
-          data: formData,
+          data: requestData,
           language,
         },
       });
@@ -97,7 +129,7 @@ export default function PestDetection() {
           organic_alternatives: data.data.organic_alternatives || data.data.biological_control || [],
           prevention: data.data.prevention || data.data.preventive_measures || [],
         });
-        toast({ title: 'Analysis Complete', description: 'Pest/disease identified!' });
+        toast({ title: 'Analysis Complete', description: selectedImage ? 'Image analyzed with AI vision!' : 'Pest/disease identified!' });
       } else {
         throw new Error(data?.error || 'Failed to analyze');
       }
@@ -127,15 +159,14 @@ export default function PestDetection() {
     <PageContainer>
       <AppHeader title={t('pestDetection')} />
 
-      {/* Info Card */}
       <PageSection>
         <Card className="bg-warning/10 border-warning/30">
           <CardContent className="p-4 flex items-start gap-3">
             <Bug className="w-8 h-8 text-warning shrink-0 mt-1" />
             <div>
-              <p className="font-medium">AI-Powered Detection</p>
+              <p className="font-medium">AI-Powered Detection with Vision</p>
               <p className="text-sm text-muted-foreground">
-                Describe symptoms or upload a photo for instant pest and disease identification with treatment recommendations.
+                Upload a photo of your crop for AI image analysis, or describe symptoms for instant pest identification with ICAR-recommended treatments.
               </p>
             </div>
           </CardContent>
@@ -143,7 +174,7 @@ export default function PestDetection() {
       </PageSection>
 
       {/* Image Upload */}
-      <PageSection title="Upload Photo (Optional)">
+      <PageSection title="Upload Crop Photo">
         <Card>
           <CardContent className="p-4">
             <input
@@ -158,14 +189,16 @@ export default function PestDetection() {
             {selectedImage ? (
               <div className="relative">
                 <img src={selectedImage} alt="Selected" className="w-full h-48 object-cover rounded-lg" />
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setSelectedImage(null)}
-                  className="absolute top-2 right-2"
-                >
-                  Change
-                </Button>
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <Badge className="bg-success">📸 Image ready for AI analysis</Badge>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setSelectedImage(null)}
+                  >
+                    Change
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="flex gap-3">
@@ -210,7 +243,7 @@ export default function PestDetection() {
             </div>
 
             <div>
-              <Label>Symptoms Description</Label>
+              <Label>Symptoms Description {selectedImage ? '(optional with photo)' : ''}</Label>
               <Textarea
                 placeholder="Describe what you observe: yellowing leaves, spots, wilting, holes, etc."
                 value={formData.symptoms}
@@ -251,7 +284,6 @@ export default function PestDetection() {
         </Card>
       </PageSection>
 
-      {/* Analyze Button */}
       <PageSection>
         <Button
           onClick={handleAnalyze}
@@ -261,12 +293,12 @@ export default function PestDetection() {
           {isLoading ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              Analyzing...
+              {selectedImage ? 'Analyzing Image with AI Vision...' : 'Analyzing...'}
             </>
           ) : (
             <>
               <Bug className="w-5 h-5" />
-              Identify Pest/Disease
+              {selectedImage ? 'Analyze Photo with AI' : 'Identify Pest/Disease'}
             </>
           )}
         </Button>
@@ -300,7 +332,7 @@ export default function PestDetection() {
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3 mb-3">
                     <Pill className="w-5 h-5 text-info shrink-0 mt-0.5" />
-                    <p className="text-sm text-muted-foreground">Recommended chemical controls</p>
+                    <p className="text-sm text-muted-foreground">ICAR-recommended chemical controls</p>
                   </div>
                   <ul className="space-y-2">
                     {(Array.isArray(result.treatment) ? result.treatment : [result.treatment]).map((item, idx) => (

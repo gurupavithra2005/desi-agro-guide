@@ -46,9 +46,11 @@ export default function CropRecommendation() {
   const { toast } = useToast();
   const [selectedSeason, setSelectedSeason] = useState('kharif');
   const [selectedLandType, setSelectedLandType] = useState('all');
+  const [selectedSoilType, setSelectedSoilType] = useState('');
   const [isAIMode, setIsAIMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [aiRecommendations, setAiRecommendations] = useState<AIRecommendation[]>([]);
+  const [dbCrops, setDbCrops] = useState<any[]>([]);
   
   const [farmDetails, setFarmDetails] = useState({
     state: profile?.state || '',
@@ -62,6 +64,15 @@ export default function CropRecommendation() {
     potassium: '',
     soilPh: '',
   });
+
+  // Fetch crops from database
+  useEffect(() => {
+    const fetchCrops = async () => {
+      const { data } = await supabase.from('crops').select('*').order('name_en');
+      if (data) setDbCrops(data);
+    };
+    fetchCrops();
+  }, []);
 
   // Default crop data for basic mode
   const crops: Crop[] = [
@@ -113,6 +124,16 @@ export default function CropRecommendation() {
     { value: 'dry', label: 'Dry Land' },
     { value: 'wet', label: 'Wet Land' },
     { value: 'garden', label: 'Garden Land' },
+  ];
+
+  const soilTypes = [
+    { value: '', label: 'All Soils' },
+    { value: 'Black', label: 'Black Soil' },
+    { value: 'Alluvial', label: 'Alluvial' },
+    { value: 'Red', label: 'Red Soil' },
+    { value: 'Sandy', label: 'Sandy / Sandy Loam' },
+    { value: 'Laterite', label: 'Laterite' },
+    { value: 'Loamy', label: 'Loamy' },
   ];
 
   const filteredCrops = crops.filter((crop) => {
@@ -336,7 +357,73 @@ export default function CropRecommendation() {
         </div>
       </PageSection>
 
-      {/* AI Recommendations */}
+      {/* Soil Type Filter */}
+      <PageSection>
+        <div className="flex items-center gap-2">
+          <Mountain className="w-4 h-4 text-muted-foreground" />
+          <div className="flex gap-2 overflow-x-auto">
+            {soilTypes.map((soil) => (
+              <button
+                key={soil.value}
+                onClick={() => {
+                  setSelectedSoilType(soil.value);
+                  setIsAIMode(false);
+                }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                  selectedSoilType === soil.value
+                    ? 'bg-accent text-accent-foreground'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {soil.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </PageSection>
+
+      {/* DB Crops Section */}
+      {dbCrops.length > 0 && !isAIMode && (
+        <PageSection title={`From Database (${dbCrops.filter(c => {
+          const matchesSeason = c.season?.includes(selectedSeason === 'kharif' ? 'Kharif' : selectedSeason === 'rabi' ? 'Rabi' : 'Zaid');
+          const matchesLand = selectedLandType === 'all' || c.suitable_land_types?.includes(selectedLandType);
+          return matchesSeason && matchesLand;
+        }).length} crops)`}>
+          <div className="space-y-2">
+            {dbCrops
+              .filter(c => {
+                const matchesSeason = c.season?.includes(selectedSeason === 'kharif' ? 'Kharif' : selectedSeason === 'rabi' ? 'Rabi' : 'Zaid');
+                const matchesLand = selectedLandType === 'all' || c.suitable_land_types?.includes(selectedLandType);
+                return matchesSeason && matchesLand;
+              })
+              .slice(0, 10)
+              .map((crop) => (
+                <Card key={crop.id} className="bg-secondary/30">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{crop.name_en}</p>
+                        {crop.name_ta && <p className="text-xs text-muted-foreground">{crop.name_ta}</p>}
+                      </div>
+                      <div className="flex gap-1">
+                        <Badge variant="outline" className="text-xs">{crop.category}</Badge>
+                        {crop.water_requirement && (
+                          <Badge variant="outline" className="text-xs">
+                            <Droplets className="w-2 h-2 mr-0.5" />{crop.water_requirement}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    {crop.growth_duration_days && (
+                      <p className="text-xs text-muted-foreground mt-1">📅 {crop.growth_duration_days} days</p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+        </PageSection>
+      )}
+
       {isAIMode && aiRecommendations.length > 0 && (
         <PageSection title="🤖 AI Recommendations">
           <div className="space-y-3">
