@@ -4,6 +4,7 @@ import {
   CloudSun,
   TrendingUp,
   Bug,
+  Mountain,
   Droplets,
   Map,
   Calendar,
@@ -68,6 +69,13 @@ export default function Dashboard() {
       description: 'Manage your farm plots',
       path: '/fields',
       variant: 'default' as const,
+    },
+    {
+      icon: Mountain,
+      title: 'Soil Crop Guide',
+      description: 'Soil-based crop & fertilizer advice',
+      path: '/soil-guide',
+      variant: 'warning' as const,
     },
     {
       icon: Calendar,

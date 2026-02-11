@@ -6,14 +6,8 @@ const corsHeaders = {
 };
 
 const LANGUAGE_NAMES: Record<string, string> = {
-  en: "English",
-  hi: "Hindi",
-  ta: "Tamil",
-  te: "Telugu",
-  kn: "Kannada",
-  bn: "Bengali",
-  pa: "Punjabi",
-  mr: "Marathi",
+  en: "English", hi: "Hindi", ta: "Tamil", te: "Telugu",
+  kn: "Kannada", bn: "Bengali", pa: "Punjabi", mr: "Marathi",
 };
 
 serve(async (req) => {
@@ -41,6 +35,38 @@ Your expertise includes:
 - Market prices and selling strategies
 - Government schemes (PM-KISAN, PMFBY, Soil Health Card, KCC, eNAM)
 - Weather-based farming advice
+- ICAR recommended practices
+
+## Tamil Nadu Specific Knowledge:
+### Rice Varieties: ADT 36 (110d), ADT 43 (135d), ADT 45 (105d), CO 51 (130d), CO 52 (150d), BPT 5204 Samba Mahsuri (145d), IR 20 (100d), Ponni (135d)
+### Seasons: Kuruvai (Jun-Sep), Samba (Aug-Jan), Navarai (Jan-Apr)
+### Key Crops by District:
+- Thanjavur/Tiruvarur/Nagapattinam: Rice (Cauvery delta), Banana
+- Erode/Salem: Turmeric, Groundnut, Cotton
+- Coimbatore/Tirupur: Cotton, Coconut, Vegetables
+- Kanyakumari: Rubber, Coconut, Banana
+- Thiruvallur/Kanchipuram: Paddy, Vegetables, Groundnut
+- Nilgiris: Tea, Potato, Carrots, Spices
+- Madurai/Dindigul: Cotton, Millets, Vegetables
+- Krishnagiri/Dharmapuri: Mango, Tomato, Ragi
+
+### Fertilizer Doses (kg/ha - N:P:K):
+- Paddy: 150:50:50 (4 splits), Groundnut: 25:50:75, Cotton: 120:60:60
+- Sugarcane: 300:100:150, Maize: 135:62:50, Tomato: 120:80:80
+- Banana: 200:60:300, Turmeric: 150:60:108
+
+### Micronutrient Tips:
+- Zinc deficiency: ZnSO4 25 kg/ha (common in rice)
+- Iron chlorosis: FeSO4 50 kg/ha or 0.5% foliar spray
+- Boron: Borax 10 kg/ha for oilseeds, pulses
+
+### Government Schemes:
+- PM-KISAN: ₹6,000/year in 3 installments
+- PMFBY: Crop insurance with 2% Kharif, 1.5% Rabi premium
+- KCC: Credit up to ₹3 lakh at 4% interest
+- Soil Health Card: Free testing every 3 years
+- eNAM: Online mandi trading platform
+- TN State Schemes: Free electricity for farmers, crop loan waiver, subsidized seeds
 
 Communication style:
 - Speak in simple, clear ${languageName}
@@ -49,14 +75,6 @@ Communication style:
 - Provide actionable, practical advice
 - When unsure, recommend consulting local agriculture officers
 
-Key knowledge:
-- PM-KISAN: ₹6,000/year in 3 installments
-- PMFBY: Crop insurance with 2% Kharif, 1.5% Rabi premium
-- KCC: Credit up to ₹3 lakh at 4% interest
-- Soil Health Card: Free testing every 3 years
-- eNAM: Online mandi trading platform
-
-Always be helpful, culturally sensitive, and focused on practical farming solutions.
 Respond in ${languageName} language.`;
 
     console.log(`AI Assistant request in language: ${language}`);
@@ -71,7 +89,7 @@ Respond in ${languageName} language.`;
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages.slice(-10), // Keep last 10 messages for context
+          ...messages.slice(-10),
         ],
         stream: true,
       }),
@@ -83,20 +101,17 @@ Respond in ${languageName} language.`;
       
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       throw new Error(`AI request failed: ${response.status}`);
     }
 
-    // Stream the response back
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
