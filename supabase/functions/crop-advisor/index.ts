@@ -128,7 +128,41 @@ Irrigation: ${data.irrigation || 'Rainfed'}`;
         messages = [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }];
         break;
 
-      case "pest_detection":
+      case "pest_detection": {
+        // If image is provided, first classify with Hugging Face CNN model
+        let hfClassification = "";
+        if (data.imageBase64) {
+          const HF_API_KEY = Deno.env.get("HUGGINGFACE_API_KEY");
+          if (HF_API_KEY) {
+            try {
+              // Strip data URL prefix to get raw base64
+              const base64Data = data.imageBase64.replace(/^data:image\/\w+;base64,/, "");
+              const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+
+              const hfResponse = await fetch(
+                "https://api-inference.huggingface.co/models/linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification",
+                {
+                  method: "POST",
+                  headers: { "Authorization": `Bearer ${HF_API_KEY}`, "Content-Type": "application/octet-stream" },
+                  body: binaryData,
+                }
+              );
+              if (hfResponse.ok) {
+                const hfResult = await hfResponse.json();
+                if (Array.isArray(hfResult) && hfResult.length > 0) {
+                  const top5 = hfResult.slice(0, 5).map((r: any) => `${r.label} (${(r.score * 100).toFixed(1)}%)`).join(", ");
+                  hfClassification = `\n\nCNN Image Classification Results (MobileNet Plant Disease Model): ${top5}`;
+                  console.log("HuggingFace classification:", top5);
+                }
+              } else {
+                console.error("HuggingFace API error:", hfResponse.status, await hfResponse.text());
+              }
+            } catch (hfErr) {
+              console.error("HuggingFace classification failed:", hfErr);
+            }
+          }
+        }
+
         systemPrompt = `You are an expert plant pathologist and entomologist specializing in Indian crops.
 ${ICAR_KNOWLEDGE}
 
@@ -140,6 +174,7 @@ When analyzing pest/disease, provide:
 5. organic_alternatives (array)
 6. prevention (array)
 
+If CNN classification results are provided, use them to improve your diagnosis accuracy.
 Always respond in ${langName}. Format as structured JSON.`;
 
         userPrompt = `Analyze pest/disease:
@@ -147,9 +182,8 @@ Crop: ${data.crop || 'Not specified'}
 Symptoms: ${data.symptoms || 'Not described'}
 Affected Part: ${data.affectedPart || 'Leaves'}
 Spread: ${data.spread || 'Not specified'}
-Duration: ${data.duration || 'Not specified'}`;
+Duration: ${data.duration || 'Not specified'}${hfClassification}`;
 
-        // If image is provided, use multimodal
         if (data.imageBase64) {
           messages = [
             { role: "system", content: systemPrompt },
@@ -165,6 +199,7 @@ Duration: ${data.duration || 'Not specified'}`;
           messages = [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }];
         }
         break;
+      }
 
       case "soil_crop_guide":
         systemPrompt = `You are an expert soil scientist and agronomist for Indian agriculture.
