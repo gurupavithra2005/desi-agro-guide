@@ -84,6 +84,7 @@ serve(async (req) => {
     let systemPrompt = "";
     let userPrompt = "";
     let messages: any[] = [];
+    let cnnScores: { label: string; score: number }[] = [];
 
     switch (type) {
       case "crop_recommendation":
@@ -131,11 +132,11 @@ Irrigation: ${data.irrigation || 'Rainfed'}`;
       case "pest_detection": {
         // If image is provided, first classify with Hugging Face CNN model
         let hfClassification = "";
+        cnnScores = [];
         if (data.imageBase64) {
           const HF_API_KEY = Deno.env.get("HUGGINGFACE_API_KEY");
           if (HF_API_KEY) {
             try {
-              // Strip data URL prefix to get raw base64
               const base64Data = data.imageBase64.replace(/^data:image\/\w+;base64,/, "");
               const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
 
@@ -150,7 +151,8 @@ Irrigation: ${data.irrigation || 'Rainfed'}`;
               if (hfResponse.ok) {
                 const hfResult = await hfResponse.json();
                 if (Array.isArray(hfResult) && hfResult.length > 0) {
-                  const top5 = hfResult.slice(0, 5).map((r: any) => `${r.label} (${(r.score * 100).toFixed(1)}%)`).join(", ");
+                  cnnScores = hfResult.slice(0, 6).map((r: any) => ({ label: r.label, score: r.score }));
+                  const top5 = cnnScores.map(r => `${r.label} (${(r.score * 100).toFixed(1)}%)`).join(", ");
                   hfClassification = `\n\nCNN Image Classification Results (MobileNet Plant Disease Model): ${top5}`;
                   console.log("HuggingFace classification:", top5);
                 }
@@ -274,11 +276,18 @@ List 8-10 best matching crops with complete fertilizer doses.`;
       parsedContent = { text: content };
     }
 
-    return new Response(JSON.stringify({
+    const responsePayload: any = {
       success: true,
       type,
       data: parsedContent,
-    }), {
+    };
+
+    // Attach CNN scores for pest_detection
+    if (type === "pest_detection" && cnnScores && cnnScores.length > 0) {
+      responsePayload.cnn_scores = cnnScores;
+    }
+
+    return new Response(JSON.stringify(responsePayload), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
