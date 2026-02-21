@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill } from 'lucide-react';
+import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill, BarChart3 } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageContainer, PageSection } from '@/components/layout/PageContainer';
@@ -12,6 +12,12 @@ import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+
+interface CnnScore {
+  label: string;
+  score: number;
+}
 
 interface DetectionResult {
   pest: string;
@@ -29,6 +35,7 @@ export default function PestDetection() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
+  const [cnnScores, setCnnScores] = useState<CnnScore[]>([]);
 
   const [formData, setFormData] = useState({
     crop: '',
@@ -129,7 +136,8 @@ export default function PestDetection() {
           organic_alternatives: data.data.organic_alternatives || data.data.biological_control || [],
           prevention: data.data.prevention || data.data.preventive_measures || [],
         });
-        toast({ title: 'Analysis Complete', description: selectedImage ? 'Image analyzed with AI vision!' : 'Pest/disease identified!' });
+        setCnnScores(data.cnn_scores || []);
+        toast({ title: 'Analysis Complete', description: selectedImage ? 'Image analyzed with AI vision + CNN!' : 'Pest/disease identified!' });
       } else {
         throw new Error(data?.error || 'Failed to analyze');
       }
@@ -325,6 +333,53 @@ export default function PestDetection() {
               </CardContent>
             </Card>
           </PageSection>
+
+          {/* CNN Classification Bar Chart */}
+          {cnnScores.length > 0 && (
+            <PageSection title="CNN Classification Scores">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3 mb-3">
+                    <BarChart3 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <p className="text-sm text-muted-foreground">
+                      MobileNet Plant Disease Model — Top predictions
+                    </p>
+                  </div>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={cnnScores.map(s => ({
+                          name: s.label.length > 20 ? s.label.slice(0, 18) + '…' : s.label,
+                          fullName: s.label,
+                          confidence: Math.round(s.score * 100 * 10) / 10,
+                        }))}
+                        layout="vertical"
+                        margin={{ left: 10, right: 30, top: 5, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 12 }} />
+                        <YAxis dataKey="name" type="category" width={130} tick={{ fontSize: 11 }} />
+                        <Tooltip
+                          formatter={(value: number) => [`${value}%`, 'Confidence']}
+                          labelFormatter={(_, payload) => payload?.[0]?.payload?.fullName || ''}
+                          contentStyle={{ borderRadius: '8px', fontSize: '13px' }}
+                        />
+                        <Bar dataKey="confidence" radius={[0, 4, 4, 0]}>
+                          {cnnScores.map((_, index) => (
+                            <Cell
+                              key={index}
+                              fill={index === 0 ? 'hsl(var(--primary))' : index === 1 ? 'hsl(var(--warning))' : 'hsl(var(--muted-foreground))'}
+                              fillOpacity={index === 0 ? 1 : 0.6}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </PageSection>
+          )}
 
           {result.treatment && result.treatment.length > 0 && (
             <PageSection title="Chemical Treatment">
