@@ -27,7 +27,7 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Try fetching from data.gov.in API (Agmarknet)
-    const API_KEY = "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b";
+    const API_KEY = "579b464db66ec23bdd000001b17d12ae734549c658e45de109352e8e";
     const baseUrl = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070";
     
     const params = new URLSearchParams({

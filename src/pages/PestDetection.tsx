@@ -189,7 +189,7 @@ export default function PestDetection() {
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              capture="environment"
+              
               onChange={handleImageSelect}
               className="hidden"
             />
@@ -212,7 +212,12 @@ export default function PestDetection() {
               <div className="flex gap-3">
                 <Button
                   variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.setAttribute('capture', 'environment');
+                      fileInputRef.current.click();
+                    }
+                  }}
                   className="flex-1 h-24 flex-col gap-2"
                 >
                   <Camera className="w-8 h-8" />
@@ -220,7 +225,12 @@ export default function PestDetection() {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.removeAttribute('capture');
+                      fileInputRef.current.click();
+                    }
+                  }}
                   className="flex-1 h-24 flex-col gap-2"
                 >
                   <Upload className="w-8 h-8" />
