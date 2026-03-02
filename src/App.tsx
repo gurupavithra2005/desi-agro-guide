@@ -23,7 +23,7 @@ import Community from "./pages/Community";
 import MyFields from "./pages/MyFields";
 import CropCalendar from "./pages/CropCalendar";
 import SoilCropGuide from "./pages/SoilCropGuide";
-
+import Guide from "./pages/Guide";
 const queryClient = new QueryClient();
 
 // Protected Route wrapper
@@ -157,6 +157,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <SoilCropGuide />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/guide"
+        element={
+          <ProtectedRoute>
+            <Guide />
           </ProtectedRoute>
         }
       />
