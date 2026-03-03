@@ -11,7 +11,7 @@ import {
   Users,
   FileText,
   Mic,
-  AlertTriangle,
+  BookOpen,
 } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -90,6 +90,7 @@ export default function Dashboard() {
     { icon: Mic, title: t('voiceAssistant'), path: '/voice' },
     { icon: Users, title: t('community'), path: '/community' },
     { icon: FileText, title: t('schemes'), path: '/schemes' },
+    { icon: BookOpen, title: 'Guide', path: '/guide' },
   ];
 
   return (
@@ -126,18 +127,6 @@ export default function Dashboard() {
         </Card>
       </PageSection>
 
-      {/* Alert Banner (if any) */}
-      <PageSection>
-        <Card className="bg-warning/10 border-warning/30">
-          <CardContent className="p-3 flex items-center gap-3">
-            <AlertTriangle className="w-6 h-6 text-warning shrink-0" />
-            <div>
-              <p className="font-medium text-sm">Weather Alert</p>
-              <p className="text-xs text-muted-foreground">Heavy rainfall expected in 2 days. Plan irrigation accordingly.</p>
-            </div>
-          </CardContent>
-        </Card>
-      </PageSection>
 
       {/* Main Features */}
       <PageSection title="Advisory Services">
@@ -157,7 +146,7 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <PageSection title="Quick Actions">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {quickActions.map((action) => (
             <button
               key={action.path}

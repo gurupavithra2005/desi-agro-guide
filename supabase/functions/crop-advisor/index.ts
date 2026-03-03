@@ -141,12 +141,12 @@ Irrigation: ${data.irrigation || 'Rainfed'}`;
               const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
 
               const hfResponse = await fetch(
-                "https://api-inference.huggingface.co/models/linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification",
+                "https://api-inference.huggingface.co/models/ozair23/mobilenet_v2_1.0_224-finetuned-plantdisease",
                 {
                   method: "POST",
                   headers: { "Authorization": `Bearer ${HF_API_KEY}`, "Content-Type": "application/octet-stream" },
                   body: binaryData,
-                  signal: AbortSignal.timeout(15000),
+                  signal: AbortSignal.timeout(10000),
                 }
               );
               if (hfResponse.ok) {
@@ -232,7 +232,7 @@ List 8-10 best matching crops with complete fertilizer doses.`;
 
     console.log(`Processing ${type} request for language: ${language}`);
 
-    const model = data.imageBase64 ? "google/gemini-2.5-pro" : "google/gemini-2.5-pro";
+    const model = "google/gemini-3-flash-preview";
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
