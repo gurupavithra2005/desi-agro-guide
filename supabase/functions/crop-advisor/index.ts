@@ -80,18 +80,25 @@ const PLANT_DISEASE_KNOWLEDGE = `
 - **Damping Off (Pythium/Rhizoctonia)**: Seedling collapse at soil line. Crops: All vegetables. Treatment: Captan @ 2g/L drench, Metalaxyl seed treatment
 - **Leaf Curl (Taphrina)**: Leaf puckering and curling with thickening. Crops: Peach, Chilli. Treatment: Copper oxychloride @ 3g/L before bud break
 - **Sigatoka (Mycosphaerella)**: Yellow streaks becoming brown spots on banana. Crops: Banana. Treatment: Propiconazole @ 1ml/L, Mancozeb @ 2.5g/L
+- **Brown Spot (Bipolaris oryzae)**: Oval brown spots with gray center on rice leaves. Treatment: Mancozeb @ 2.5g/L, Propiconazole @ 1ml/L
+- **Tikka Disease (Cercospora arachidicola)**: Circular dark brown spots on groundnut. Treatment: Chlorothalonil @ 2g/L, Mancozeb @ 2.5g/L
+- **Panama Wilt (Fusarium oxysporum f.sp. cubense)**: Banana pseudostem splitting, yellowing. Treatment: No cure; use resistant varieties (Grand Naine), soil solarization
+- **Grey Mold (Botrytis cinerea)**: Fuzzy gray mold on fruits/flowers. Crops: Strawberry, Tomato, Grapes. Treatment: Iprodione 50 WP @ 2g/L
+- **Sclerotinia Rot**: White cottony mold with black sclerotia. Crops: Mustard, Sunflower. Treatment: Carbendazim @ 1g/L
 
 ### BACTERIAL DISEASES:
 - **Bacterial Leaf Blight (Xanthomonas oryzae)**: Water-soaked streaks, grayish-white lesions. Crops: Rice. Treatment: Streptocycline @ 0.01%, Copper oxychloride @ 3g/L
 - **Bacterial Wilt (Ralstonia solanacearum)**: Rapid wilting, brown vascular tissue. Crops: Tomato, Potato, Brinjal, Ginger. Treatment: No cure; remove infected plants, Bleaching powder 10g/pit
 - **Citrus Canker (Xanthomonas citri)**: Raised corky lesions on leaves/fruits. Crops: Citrus. Treatment: Copper oxychloride @ 3g/L, Streptocycline @ 100ppm
 - **Black Rot (Xanthomonas campestris)**: V-shaped yellow lesions from leaf margin. Crops: Cabbage, Cauliflower. Treatment: Copper oxychloride @ 3g/L, hot water seed treatment
+- **Soft Rot (Erwinia carotovora)**: Mushy, foul-smelling tissue decay. Crops: Potato, Carrot, Onion. Treatment: Avoid injuries, Streptocycline @ 200ppm
 
 ### VIRAL DISEASES:
 - **Yellow Mosaic Virus (YMV)**: Bright yellow mosaic pattern on leaves. Crops: Soybean, Mung bean, Okra. Treatment: Control whitefly vector with Imidacloprid, remove infected plants
 - **Tomato Leaf Curl Virus (ToLCV)**: Upward curling, stunting, small leaves. Crops: Tomato, Chilli. Treatment: Whitefly control, Imidacloprid 17.8 SL, resistant varieties
 - **Mosaic Virus (TMV/CMV)**: Light/dark green mosaic pattern. Crops: Tomato, Cucumber, Tobacco. Treatment: Remove infected plants, control aphid vectors
 - **Tungro Virus**: Yellow-orange discoloration of rice leaves. Crops: Rice. Treatment: Control green leafhopper vector, resistant varieties (IR36, CO 45)
+- **Banana Bunchy Top Virus**: Bunching of leaves at top, dark green streaks on petiole. Treatment: Remove and destroy infected plants, control aphid vector
 
 ### MAJOR INSECT PESTS:
 - **Aphids**: Colonies on growing tips, transmit viruses. Treatment: Imidacloprid 17.8 SL @ 0.3ml/L, Thiamethoxam 25 WG @ 0.3g/L
@@ -104,6 +111,8 @@ const PLANT_DISEASE_KNOWLEDGE = `
 - **Red Spider Mite**: Fine webbing, stippling on leaves. Treatment: Dicofol 18.5 EC @ 2.5ml/L, Spiromesifen @ 0.7ml/L
 - **Leaf Miner**: Serpentine mines on leaves. Treatment: Abamectin 1.9 EC @ 0.5ml/L, Cyromazine 75 WP @ 0.3g/L
 - **Root Knot Nematode**: Gall formation on roots, stunted growth. Treatment: Carbofuran 3G @ 1 kg ai/ha, Paecilomyces lilacinus
+- **Shoot and Fruit Borer (Leucinodes orbonalis)**: Bore holes in brinjal shoots/fruits. Treatment: Emamectin benzoate @ 0.4g/L, Neem oil 5ml/L
+- **Diamond Back Moth (Plutella xylostella)**: Small holes on cabbage/cauliflower leaves. Treatment: Spinosad @ 0.3ml/L, Bt @ 1g/L
 
 ### DEFICIENCY SYMPTOMS (not pests but commonly confused):
 - **Nitrogen deficiency**: General yellowing starting from older leaves
@@ -112,6 +121,9 @@ const PLANT_DISEASE_KNOWLEDGE = `
 - **Iron deficiency (Chlorosis)**: Yellowing of young leaves with green veins
 - **Zinc deficiency**: Small leaves, interveinal chlorosis
 - **Calcium deficiency**: Blossom end rot in tomato
+- **Magnesium deficiency**: Interveinal chlorosis on older leaves
+- **Sulfur deficiency**: Uniform yellowing of young leaves
+- **Manganese deficiency**: Interveinal chlorosis with tan/gray spots
 `;
 
 const LANGUAGE_MAP: Record<string, string> = {
@@ -182,7 +194,7 @@ Irrigation: ${data.irrigation || 'Rainfed'}`;
         break;
 
       case "pest_detection": {
-        // CNN classification with HuggingFace - run in parallel with fast timeout
+        // CNN classification with HuggingFace
         let hfClassification = "";
         cnnScores = [];
         if (data.imageBase64) {
@@ -192,7 +204,6 @@ Irrigation: ${data.irrigation || 'Rainfed'}`;
               const base64Data = data.imageBase64.replace(/^data:image\/\w+;base64,/, "");
               const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
 
-              // Use a reliable, well-maintained plant disease model
               const hfResponse = await fetch(
                 "https://api-inference.huggingface.co/models/linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification",
                 {
@@ -211,27 +222,7 @@ Irrigation: ${data.irrigation || 'Rainfed'}`;
                   console.log("HuggingFace classification:", top5);
                 }
               } else {
-                const errStatus = hfResponse.status;
-                console.error("HuggingFace API error:", errStatus);
-                // Try fallback model
-                try {
-                  const fallbackResponse = await fetch(
-                    "https://api-inference.huggingface.co/models/nateraw/vit-base-beans",
-                    {
-                      method: "POST",
-                      headers: { "Authorization": `Bearer ${HF_API_KEY}`, "Content-Type": "application/octet-stream" },
-                      body: binaryData,
-                      signal: AbortSignal.timeout(6000),
-                    }
-                  );
-                  if (fallbackResponse.ok) {
-                    const fbResult = await fallbackResponse.json();
-                    if (Array.isArray(fbResult) && fbResult.length > 0) {
-                      cnnScores = fbResult.slice(0, 6).map((r: any) => ({ label: r.label, score: r.score }));
-                      hfClassification = `\n\nCNN fallback classification: ${cnnScores.map(r => `${r.label} (${(r.score * 100).toFixed(1)}%)`).join(", ")}`;
-                    }
-                  }
-                } catch { /* ignore fallback failure */ }
+                console.error("HuggingFace API error:", hfResponse.status);
               }
             } catch (hfErr) {
               console.error("HuggingFace classification failed:", hfErr);
@@ -239,31 +230,38 @@ Irrigation: ${data.irrigation || 'Rainfed'}`;
           }
         }
 
-        systemPrompt = `You are a world-class plant pathologist, entomologist, and agricultural disease diagnostics expert. You have extensive training in identifying ALL plant diseases including fungal, bacterial, viral diseases, nutrient deficiencies, and insect pest damage across ALL crops worldwide.
+        systemPrompt = `You are a world-class plant pathologist, entomologist, and agricultural disease diagnostics expert with 30+ years experience. You can identify ANY plant disease from visual symptoms alone.
 
 ${PLANT_DISEASE_KNOWLEDGE}
 
 ${ICAR_KNOWLEDGE}
 
-## CRITICAL INSTRUCTIONS:
-1. You MUST identify the specific disease/pest by its proper name. NEVER say "Unknown disease" or "unidentified".
-2. If an image is provided, carefully analyze visual symptoms: leaf color, spots, patterns, lesions, insect damage, wilting patterns, mold, pustules, etc.
-3. If CNN classification results are provided, use them as a strong hint but also apply your own visual analysis.
-4. Even if you're uncertain, provide your BEST diagnosis with the most likely disease name. Give confidence score accordingly (e.g., 0.6 for moderate certainty).
-5. Always provide actionable treatment recommendations with specific chemical names and dosages.
-6. If the image shows a healthy plant, say "Healthy Plant - No disease detected" with confidence 0.95.
-7. If symptoms match nutrient deficiency rather than disease, identify it as such (e.g., "Nitrogen Deficiency", "Iron Chlorosis").
+## ABSOLUTE RULES - YOU MUST FOLLOW THESE:
+1. **NEVER EVER** return "Unknown", "Unknown disease", "unidentified", or any variant. This is STRICTLY FORBIDDEN.
+2. You MUST ALWAYS identify a specific disease, pest, deficiency, or condition by its proper scientific/common name.
+3. If the image shows disease symptoms, match them to the closest disease from your knowledge base above. Example: brown spots on leaves = likely Early Blight, Cercospora Leaf Spot, or Brown Spot depending on crop.
+4. If no clear disease is visible, diagnose it as one of: "Healthy Plant", "Nutrient Deficiency (specify which)", "Environmental Stress", "Mechanical Damage", or "Aging/Senescence".
+5. If CNN classification results are provided, use the TOP CNN prediction as your primary diagnosis unless your visual analysis strongly contradicts it.
+6. Give confidence between 0.5-0.95. Use 0.5-0.6 for uncertain diagnoses, 0.7-0.8 for probable, 0.85+ for confident.
+7. Always provide SPECIFIC chemical names with exact dosages from ICAR recommendations.
+8. Respond ONLY in ${langName} language.
 
-RESPOND ONLY in ${langName} language.
+## DIAGNOSIS DECISION TREE:
+- Spots/lesions on leaves → Check pattern: concentric rings = Early Blight, diamond = Blast, circular brown = Cercospora, orange pustules = Rust
+- Yellowing → Uniform = N deficiency, interveinal = Fe/Zn deficiency, mosaic pattern = Viral disease
+- Wilting → Sudden = Bacterial Wilt, gradual one-sided = Fusarium Wilt
+- White coating → Powdery = Powdery Mildew, downy underneath = Downy Mildew
+- Holes/damage → Regular holes = Insect damage (identify specific pest), irregular = Caterpillar damage
+- Curling → Upward with stunting = Leaf Curl Virus, downward = moisture stress
 
 Return a JSON object with these exact fields:
 {
-  "pest": "Exact disease/pest name",
-  "confidence": 0.85,
+  "pest": "Specific Disease/Pest Name (NEVER 'Unknown')",
+  "confidence": 0.75,
   "severity": "low|medium|high|critical",
-  "description": "Brief description of the disease and how it affects the crop",
-  "treatment": ["Chemical treatment 1 with dosage", "Chemical treatment 2 with dosage"],
-  "organic_alternatives": ["Organic method 1", "Organic method 2"],
+  "description": "Detailed description of the disease, its cause, and how it affects the crop",
+  "treatment": ["Specific chemical 1 with exact dosage", "Specific chemical 2 with exact dosage"],
+  "organic_alternatives": ["Organic method 1 with application details", "Organic method 2"],
   "prevention": ["Prevention tip 1", "Prevention tip 2", "Prevention tip 3"]
 }`;
 
@@ -274,7 +272,7 @@ Affected Part: ${data.affectedPart || 'Leaves'}
 Spread Pattern: ${data.spread || 'Not specified'}
 Duration: ${data.duration || 'Not specified'}${hfClassification}
 
-IMPORTANT: You MUST provide a specific disease/pest name. Analyze carefully and give your best diagnosis.`;
+CRITICAL REMINDER: You MUST provide a specific disease/pest name. "Unknown" is NOT acceptable. Use the diagnosis decision tree and CNN results to determine the most likely disease. If truly no disease is present, say "Healthy Plant - No Disease Detected".`;
 
         if (data.imageBase64) {
           messages = [
@@ -282,7 +280,7 @@ IMPORTANT: You MUST provide a specific disease/pest name. Analyze carefully and 
             {
               role: "user",
               content: [
-                { type: "text", text: userPrompt + "\n\nAnalyze the attached crop image carefully. Look at leaf color, spots, patterns, texture, holes, wilting, mold, insects etc. to identify the exact disease or pest." },
+                { type: "text", text: userPrompt + "\n\nAnalyze the attached crop image carefully. Look at leaf color, spots, patterns, texture, holes, wilting, mold, insects, discoloration etc. Match visual symptoms to a specific disease from the knowledge base. NEVER say Unknown." },
                 { type: "image_url", image_url: { url: data.imageBase64 } }
               ]
             }
@@ -321,10 +319,15 @@ List 8-10 best matching crops with complete fertilizer doses.`;
 
     console.log(`Processing ${type} request for language: ${language}`);
 
-    // Use gemini-2.5-pro for image-based pest detection (best vision model), flash for everything else
-    const model = (type === "pest_detection" && data.imageBase64) 
-      ? "google/gemini-2.5-pro" 
-      : "google/gemini-3-flash-preview";
+    // Use gemini-2.5-pro for image pest detection (best vision), gemini-2.5-flash for text-only pest, flash-preview for rest
+    let model: string;
+    if (type === "pest_detection" && data.imageBase64) {
+      model = "google/gemini-2.5-pro";
+    } else if (type === "pest_detection") {
+      model = "google/gemini-2.5-flash";
+    } else {
+      model = "google/gemini-3-flash-preview";
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -335,7 +338,7 @@ List 8-10 best matching crops with complete fertilizer doses.`;
       body: JSON.stringify({
         model,
         messages,
-        temperature: type === "pest_detection" ? 0.3 : 0.7,
+        temperature: type === "pest_detection" ? 0.2 : 0.7,
         max_tokens: type === "pest_detection" ? 4000 : 3000,
       }),
     });
@@ -369,13 +372,27 @@ List 8-10 best matching crops with complete fertilizer doses.`;
       parsedContent = { text: content };
     }
 
+    // Post-process pest detection: ensure no "Unknown" slips through
+    if (type === "pest_detection" && parsedContent.pest) {
+      const lowerPest = parsedContent.pest.toLowerCase();
+      if (lowerPest === 'unknown' || lowerPest === 'unknown disease' || lowerPest === 'unidentified' || lowerPest === 'not identified') {
+        // Use top CNN score as fallback
+        if (cnnScores.length > 0) {
+          parsedContent.pest = cnnScores[0].label;
+          parsedContent.confidence = Math.max(cnnScores[0].score, 0.5);
+        } else {
+          parsedContent.pest = "Possible Fungal Leaf Spot (requires closer examination)";
+          parsedContent.confidence = 0.5;
+        }
+      }
+    }
+
     const responsePayload: any = {
       success: true,
       type,
       data: parsedContent,
     };
 
-    // Attach CNN scores for pest_detection
     if (type === "pest_detection" && cnnScores && cnnScores.length > 0) {
       responsePayload.cnn_scores = cnnScores;
     }

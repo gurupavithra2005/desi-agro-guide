@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Mic, MicOff, Send, Volume2, Loader2, Bot, User, Trash2 } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
@@ -26,46 +26,62 @@ export default function VoiceAssistant() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [micSupported, setMicSupported] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
 
+  const langMap: Record<string, string> = {
+    en: 'en-IN', hi: 'hi-IN', ta: 'ta-IN', te: 'te-IN',
+    kn: 'kn-IN', bn: 'bn-IN', pa: 'pa-IN', mr: 'mr-IN',
+  };
+
   // Initialize speech recognition
   useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      
-      // Set language based on user preference
-      const langMap: Record<string, string> = {
-        en: 'en-IN',
-        hi: 'hi-IN',
-        ta: 'ta-IN',
-        te: 'te-IN',
-        kn: 'kn-IN',
-        bn: 'bn-IN',
-        pa: 'pa-IN',
-        mr: 'mr-IN',
-      };
-      recognitionRef.current.lang = langMap[language] || 'en-IN';
-
-      recognitionRef.current.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setInput(transcript);
-        setIsListening(false);
-      };
-
-      recognitionRef.current.onerror = () => {
-        setIsListening(false);
-        toast({ variant: 'destructive', title: 'Error', description: 'Voice recognition failed' });
-      };
-
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-      };
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    if (!SpeechRecognition) {
+      setMicSupported(false);
+      return;
     }
-  }, [language, toast]);
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = langMap[language] || 'en-IN';
+
+    recognition.onresult = (event: any) => {
+      let transcript = '';
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(transcript);
+      // If final result, stop listening
+      if (event.results[event.results.length - 1].isFinal) {
+        setIsListening(false);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+      if (event.error === 'not-allowed') {
+        toast({ variant: 'destructive', title: 'Microphone Blocked', description: 'Please allow microphone access in your browser settings.' });
+      } else if (event.error === 'no-speech') {
+        toast({ variant: 'destructive', title: 'No Speech Detected', description: 'Please speak clearly and try again.' });
+      } else {
+        toast({ variant: 'destructive', title: 'Voice Error', description: `Error: ${event.error}. Try again.` });
+      }
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+
+    return () => {
+      try { recognition.abort(); } catch {}
+    };
+  }, [language]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -79,7 +95,13 @@ export default function VoiceAssistant() {
     if (messages.length === 0) {
       const greetings: Record<string, string> = {
         en: "Hello! I'm your Crop Wise Assistant. Ask me anything about farming - crops, fertilizers, pests, weather, or government schemes!",
-        hi: "नमस्ते! मैं आपका क्रॉप वाइज सहायक हूं। खेती के बारे में कुछ भी पूछें - फसल, उर्वरक, कीट, मौसम, या सरकारी योजनाएं!",
+        hi: "नमस्ते! मैं आपका क्रॉप वाइज सहायक हूं। खेती के बारे में कुछ भी पूछें!",
+        ta: "வணக்கம்! நான் உங்கள் Crop Wise உதவியாளர். விவசாயம் பற்றி எதையும் கேளுங்கள்!",
+        te: "నమస్కారం! నేను మీ Crop Wise అసిస్టెంట్. వ్యవసాయం గురించి ఏదైనా అడగండి!",
+        kn: "ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ Crop Wise ಸಹಾಯಕ. ಕೃಷಿ ಬಗ್ಗೆ ಏನಾದರೂ ಕೇಳಿ!",
+        bn: "নমস্কার! আমি আপনার Crop Wise সহকারী। কৃষি সম্পর্কে যেকোনো কিছু জিজ্ঞাসা করুন!",
+        pa: "ਸਤ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ Crop Wise ਸਹਾਇਕ ਹਾਂ। ਖੇਤੀ ਬਾਰੇ ਕੁਝ ਵੀ ਪੁੱਛੋ!",
+        mr: "नमस्कार! मी तुमचा Crop Wise सहाय्यक आहे। शेतीबद्दल काहीही विचारा!",
       };
       setMessages([{
         id: '1',
@@ -90,34 +112,33 @@ export default function VoiceAssistant() {
     }
   }, []);
 
-  const toggleListening = () => {
+  const toggleListening = useCallback(async () => {
     if (!recognitionRef.current) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Voice recognition not supported in this browser' });
+      toast({ variant: 'destructive', title: 'Not Supported', description: 'Voice recognition is not supported in this browser. Please use Chrome.' });
       return;
     }
 
     if (isListening) {
-      recognitionRef.current.stop();
+      try { recognitionRef.current.stop(); } catch {}
       setIsListening(false);
     } else {
-      recognitionRef.current.start();
-      setIsListening(true);
+      // Request microphone permission first
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        recognitionRef.current.lang = langMap[language] || 'en-IN';
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error('Mic permission error:', err);
+        toast({ variant: 'destructive', title: 'Microphone Access Denied', description: 'Please allow microphone in browser settings and try again.' });
+      }
     }
-  };
+  }, [isListening, language]);
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      const langMap: Record<string, string> = {
-        en: 'en-IN',
-        hi: 'hi-IN',
-        ta: 'ta-IN',
-        te: 'te-IN',
-        kn: 'kn-IN',
-        bn: 'bn-IN',
-        pa: 'pa-IN',
-        mr: 'mr-IN',
-      };
       utterance.lang = langMap[language] || 'en-IN';
       speechSynthesis.speak(utterance);
     }
@@ -156,13 +177,11 @@ export default function VoiceAssistant() {
         throw new Error('Failed to get response');
       }
 
-      // Handle streaming response
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let assistantContent = '';
       const assistantMessageId = (Date.now() + 1).toString();
 
-      // Add empty assistant message to start
       setMessages(prev => [...prev, {
         id: assistantMessageId,
         role: 'assistant',
@@ -178,7 +197,6 @@ export default function VoiceAssistant() {
 
           buffer += decoder.decode(value, { stream: true });
           
-          // Process SSE lines
           let newlineIndex: number;
           while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
             let line = buffer.slice(0, newlineIndex);
@@ -203,7 +221,6 @@ export default function VoiceAssistant() {
                 ));
               }
             } catch {
-              // Incomplete JSON, put back and wait for more
               buffer = line + '\n' + buffer;
               break;
             }
@@ -261,7 +278,7 @@ export default function VoiceAssistant() {
                         className="mt-2 h-8 text-xs gap-1"
                       >
                         <Volume2 className="w-3 h-3" />
-                        Listen
+                        {language === 'hi' ? 'सुनें' : language === 'ta' ? 'கேளுங்கள்' : 'Listen'}
                       </Button>
                     )}
                   </CardContent>
@@ -286,11 +303,17 @@ export default function VoiceAssistant() {
 
       {/* Input Area */}
       <div className="p-4 border-t bg-background">
+        {isListening && (
+          <div className="text-center text-sm text-primary mb-2 animate-pulse">
+            🎤 {language === 'hi' ? 'सुन रहा है... बोलिए' : language === 'ta' ? 'கேட்கிறது... பேசுங்கள்' : 'Listening... speak now'}
+          </div>
+        )}
         <div className="flex gap-2">
           <Button
             variant={isListening ? 'destructive' : 'outline'}
             size="icon"
             onClick={toggleListening}
+            disabled={!micSupported}
             className="shrink-0 h-12 w-12"
           >
             {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
@@ -299,7 +322,7 @@ export default function VoiceAssistant() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder={language === 'hi' ? 'अपना प्रश्न लिखें...' : 'Type your question...'}
+            placeholder={language === 'hi' ? 'अपना प्रश्न लिखें...' : language === 'ta' ? 'உங்கள் கேள்வியை தட்டச்சு செய்யவும்...' : 'Type your question...'}
             className="h-12"
           />
           <Button
@@ -314,7 +337,7 @@ export default function VoiceAssistant() {
         <div className="flex justify-center mt-2">
           <Button variant="ghost" size="sm" onClick={clearChat} className="text-xs text-muted-foreground gap-1">
             <Trash2 className="w-3 h-3" />
-            Clear Chat
+            {language === 'hi' ? 'चैट साफ़ करें' : 'Clear Chat'}
           </Button>
         </div>
       </div>

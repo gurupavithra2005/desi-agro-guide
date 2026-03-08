@@ -1,5 +1,5 @@
-import { useState, useRef, useMemo } from 'react';
-import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill, BarChart3, Info } from 'lucide-react';
+import { useState, useRef, useMemo, useEffect } from 'react';
+import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill, BarChart3, Info, History, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageContainer, PageSection } from '@/components/layout/PageContainer';
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -27,6 +28,17 @@ interface DetectionResult {
   treatment: string[];
   organic_alternatives: string[];
   prevention: string[];
+}
+
+interface HistoryItem {
+  id: string;
+  created_at: string;
+  detected_pest: string | null;
+  confidence_score: number | null;
+  severity: string | null;
+  treatment_recommendation: string | null;
+  ai_response: any;
+  image_url: string | null;
 }
 
 // Multi-language translations for Pest Detection page
@@ -74,6 +86,10 @@ const pestTranslations: Record<string, Record<string, string>> = {
     pestIdentified: 'Pest/disease identified!',
     failedAnalysis: 'Failed to analyze pest/disease',
     leaves: 'Leaves', stem: 'Stem', roots: 'Roots', fruits: 'Fruits', flowers: 'Flowers', wholePlant: 'Whole Plant',
+    historyTitle: 'Analysis History',
+    noHistory: 'No past analyses yet',
+    viewHistory: 'View History',
+    hideHistory: 'Hide History',
   },
   hi: {
     pageTitle: 'कीट और रोग पहचान',
@@ -118,6 +134,10 @@ const pestTranslations: Record<string, Record<string, string>> = {
     pestIdentified: 'कीट/रोग की पहचान हुई!',
     failedAnalysis: 'कीट/रोग विश्लेषण विफल',
     leaves: 'पत्तियाँ', stem: 'तना', roots: 'जड़ें', fruits: 'फल', flowers: 'फूल', wholePlant: 'पूरा पौधा',
+    historyTitle: 'विश्लेषण इतिहास',
+    noHistory: 'अभी तक कोई विश्लेषण नहीं',
+    viewHistory: 'इतिहास देखें',
+    hideHistory: 'इतिहास छुपाएं',
   },
   ta: {
     pageTitle: 'பூச்சி மற்றும் நோய் கண்டறிதல்',
@@ -162,96 +182,86 @@ const pestTranslations: Record<string, Record<string, string>> = {
     pestIdentified: 'பூச்சி/நோய் கண்டறியப்பட்டது!',
     failedAnalysis: 'பூச்சி/நோய் பகுப்பாய்வு தோல்வி',
     leaves: 'இலைகள்', stem: 'தண்டு', roots: 'வேர்கள்', fruits: 'பழங்கள்', flowers: 'பூக்கள்', wholePlant: 'முழு செடி',
+    historyTitle: 'பகுப்பாய்வு வரலாறு',
+    noHistory: 'இதுவரை பகுப்பாய்வு இல்லை',
+    viewHistory: 'வரலாறு காண்க',
+    hideHistory: 'வரலாறு மறை',
   },
   te: {
-    pageTitle: 'తెగుళ్ళు & వ్యాధి గుర్తింపు',
-    aiPowered: 'AI-ఆధారిత గుర్తింపు',
-    aiDesc: 'AI చిత్ర విశ్లేషణ కోసం మీ పంట ఫోటోను అప్‌లోడ్ చేయండి, లేదా ICAR-సిఫార్సు చేసిన చికిత్సలతో తక్షణ తెగుళ్ల గుర్తింపు కోసం లక్షణాలను వివరించండి.',
-    uploadTitle: 'పంట ఫోటో అప్‌లోడ్',
-    imageReady: '📸 చిత్రం AI విశ్లేషణకు సిద్ధం',
-    change: 'మార్చు',
-    takePhoto: 'ఫోటో తీయండి',
-    uploadImage: 'చిత్రం అప్‌లోడ్',
-    describeTitle: 'లక్షణాలను వివరించండి',
-    crop: 'పంట',
-    selectCrop: 'ప్రభావిత పంటను ఎంచుకోండి',
-    symptomsLabel: 'లక్షణాల వివరణ',
-    symptomsOptional: '(ఫోటోతో ఐచ్ఛికం)',
-    symptomsPlaceholder: 'మీరు గమనించిన దానిని వివరించండి: ఆకులు పసుపురంగు, మచ్చలు, వాడిపోవడం, రంధ్రాలు మొదలైనవి.',
-    affectedPart: 'ప్రభావిత భాగం',
-    spread: 'వ్యాప్తి',
-    localized: 'స్థానికం (కొన్ని మొక్కలు)',
-    spreading: 'వ్యాపిస్తోంది',
-    widespread: 'విస్తృతం',
-    analyzingImage: 'AI విజన్‌తో చిత్రం విశ్లేషణ...',
-    analyzing: 'విశ్లేషణ...',
-    analyzePhoto: 'AI తో ఫోటో విశ్లేషణ',
-    identifyPest: 'తెగుళ్ళు/వ్యాధి గుర్తించండి',
-    results: 'గుర్తింపు ఫలితాలు',
-    confidence: 'విశ్వాసం',
-    cnnTitle: 'CNN వర్గీకరణ స్కోర్లు', cnnDesc: 'మొక్క వ్యాధి మోడల్', chemicalTitle: 'రసాయన చికిత్స', chemicalDesc: 'ICAR-సిఫార్సు రసాయన నియంత్రణలు', organicTitle: 'సేంద్రీయ ప్రత్యామ్నాయాలు', organicDesc: 'పర్యావరణ అనుకూల నియంత్రణ', preventionTitle: 'నివారణ చిట్కాలు', preventionDesc: 'భవిష్యత్ సంఘటనలను నివారించండి',
+    pageTitle: 'తెగుళ్ళు & వ్యాధి గుర్తింపు', aiPowered: 'AI-ఆధారిత గుర్తింపు',
+    aiDesc: 'AI చిత్ర విశ్లేషణ కోసం మీ పంట ఫోటోను అప్‌లోడ్ చేయండి.',
+    uploadTitle: 'పంట ఫోటో అప్‌లోడ్', imageReady: '📸 చిత్రం AI విశ్లేషణకు సిద్ధం', change: 'మార్చు', takePhoto: 'ఫోటో తీయండి', uploadImage: 'చిత్రం అప్‌లోడ్',
+    describeTitle: 'లక్షణాలను వివరించండి', crop: 'పంట', selectCrop: 'ప్రభావిత పంటను ఎంచుకోండి', symptomsLabel: 'లక్షణాల వివరణ', symptomsOptional: '(ఫోటోతో ఐచ్ఛికం)', symptomsPlaceholder: 'మీరు గమనించిన దానిని వివరించండి.',
+    affectedPart: 'ప్రభావిత భాగం', spread: 'వ్యాప్తి', localized: 'స్థానికం', spreading: 'వ్యాపిస్తోంది', widespread: 'విస్తృతం',
+    analyzingImage: 'AI విజన్‌తో చిత్రం విశ్లేషణ...', analyzing: 'విశ్లేషణ...', analyzePhoto: 'AI తో ఫోటో విశ్లేషణ', identifyPest: 'తెగుళ్ళు/వ్యాధి గుర్తించండి',
+    results: 'గుర్తింపు ఫలితాలు', confidence: 'విశ్వాసం', cnnTitle: 'CNN వర్గీకరణ స్కోర్లు', cnnDesc: 'మొక్క వ్యాధి మోడల్', chemicalTitle: 'రసాయన చికిత్స', chemicalDesc: 'ICAR-సిఫార్సు రసాయన నియంత్రణలు', organicTitle: 'సేంద్రీయ ప్రత్యామ్నాయాలు', organicDesc: 'పర్యావరణ అనుకూల నియంత్రణ', preventionTitle: 'నివారణ చిట్కాలు', preventionDesc: 'భవిష్యత్ సంఘటనలను నివారించండి',
     fileTooLarge: 'ఫైల్ చాలా పెద్దది', fileTooLargeDesc: '5MB కంటే తక్కువ చిత్రం అప్‌లోడ్ చేయండి', errorTitle: 'లోపం', errorDesc: 'దయచేసి పంటను ఎంచుకుని లక్షణాలను వివరించండి', analysisComplete: 'విశ్లేషణ పూర్తి', imageAnalyzed: 'AI విజన్‌తో విశ్లేషణ!', pestIdentified: 'తెగుళ్ళు/వ్యాధి గుర్తించబడింది!', failedAnalysis: 'విశ్లేషణ విఫలం',
     leaves: 'ఆకులు', stem: 'కాండం', roots: 'వేర్లు', fruits: 'పండ్లు', flowers: 'పూలు', wholePlant: 'మొత్తం మొక్క',
+    historyTitle: 'విశ్లేషణ చరిత్ర', noHistory: 'ఇంకా విశ్లేషణ లేదు', viewHistory: 'చరిత్ర చూడండి', hideHistory: 'చరిత్ర దాచు',
   },
   kn: {
-    pageTitle: 'ಕೀಟ & ರೋಗ ಪತ್ತೆ',
-    aiPowered: 'AI-ಚಾಲಿತ ಪತ್ತೆ',
-    aiDesc: 'AI ಚಿತ್ರ ವಿಶ್ಲೇಷಣೆಗೆ ನಿಮ್ಮ ಬೆಳೆಯ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ, ಅಥವಾ ICAR-ಶಿಫಾರಸು ಚಿಕಿತ್ಸೆಗಳೊಂದಿಗೆ ತಕ್ಷಣ ಕೀಟ ಗುರುತಿಸುವಿಕೆಗೆ ಲಕ್ಷಣಗಳನ್ನು ವಿವರಿಸಿ.',
-    uploadTitle: 'ಬೆಳೆ ಫೋಟೋ ಅಪ್‌ಲೋಡ್', imageReady: '📸 ಚಿತ್ರ AI ವಿಶ್ಲೇಷಣೆಗೆ ಸಿದ್ಧ', change: 'ಬದಲಿಸಿ', takePhoto: 'ಫೋಟೋ ತೆಗೆಯಿರಿ', uploadImage: 'ಚಿತ್ರ ಅಪ್‌ಲೋಡ್',
-    describeTitle: 'ಲಕ್ಷಣಗಳನ್ನು ವಿವರಿಸಿ', crop: 'ಬೆಳೆ', selectCrop: 'ಪ್ರಭಾವಿತ ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ', symptomsLabel: 'ಲಕ್ಷಣಗಳ ವಿವರಣೆ', symptomsOptional: '(ಫೋಟೋ ಇದ್ದರೆ ಐಚ್ಛಿಕ)', symptomsPlaceholder: 'ನೀವು ಗಮನಿಸಿದ್ದನ್ನು ವಿವರಿಸಿ: ಎಲೆಗಳ ಹಳದಿ, ಚುಕ್ಕೆಗಳು, ಬಾಡುವಿಕೆ ಇತ್ಯಾದಿ.',
+    pageTitle: 'ಕೀಟ & ರೋಗ ಪತ್ತೆ', aiPowered: 'AI-ಚಾಲಿತ ಪತ್ತೆ',
+    aiDesc: 'AI ಚಿತ್ರ ವಿಶ್ಲೇಷಣೆಗೆ ನಿಮ್ಮ ಬೆಳೆಯ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.',
+    uploadTitle: 'ಬೆಳೆ ಫೋಟೋ ಅಪ್‌ಲೋಡ್', imageReady: '📸 ಚಿತ್ರ ಸಿದ್ಧ', change: 'ಬದಲಿಸಿ', takePhoto: 'ಫೋಟೋ ತೆಗೆಯಿರಿ', uploadImage: 'ಚಿತ್ರ ಅಪ್‌ಲೋಡ್',
+    describeTitle: 'ಲಕ್ಷಣಗಳನ್ನು ವಿವರಿಸಿ', crop: 'ಬೆಳೆ', selectCrop: 'ಪ್ರಭಾವಿತ ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ', symptomsLabel: 'ಲಕ್ಷಣಗಳ ವಿವರಣೆ', symptomsOptional: '(ಫೋಟೋ ಇದ್ದರೆ ಐಚ್ಛಿಕ)', symptomsPlaceholder: 'ನೀವು ಗಮನಿಸಿದ್ದನ್ನು ವಿವರಿಸಿ.',
     affectedPart: 'ಪ್ರಭಾವಿತ ಭಾಗ', spread: 'ಹರಡುವಿಕೆ', localized: 'ಸ್ಥಳೀಯ', spreading: 'ಹರಡುತ್ತಿದೆ', widespread: 'ವ್ಯಾಪಕ',
     analyzingImage: 'AI ವಿಷನ್‌ನಿಂದ ಚಿತ್ರ ವಿಶ್ಲೇಷಣೆ...', analyzing: 'ವಿಶ್ಲೇಷಣೆ...', analyzePhoto: 'AI ಮೂಲಕ ಫೋಟೋ ವಿಶ್ಲೇಷಣೆ', identifyPest: 'ಕೀಟ/ರೋಗ ಗುರುತಿಸಿ',
-    results: 'ಪತ್ತೆ ಫಲಿತಾಂಶಗಳು', confidence: 'ವಿಶ್ವಾಸ', cnnTitle: 'CNN ವರ್ಗೀಕರಣ', cnnDesc: 'ಸಸ್ಯ ರೋಗ ಮಾಡೆಲ್', chemicalTitle: 'ರಾಸಾಯನಿಕ ಚಿಕಿತ್ಸೆ', chemicalDesc: 'ICAR-ಶಿಫಾರಸು ರಾಸಾಯನಿಕ ನಿಯಂತ್ರಣ', organicTitle: 'ಸಾವಯವ ಪರ್ಯಾಯಗಳು', organicDesc: 'ಪರಿಸರ ಸ್ನೇಹಿ ನಿಯಂತ್ರಣ', preventionTitle: 'ತಡೆಗಟ್ಟುವಿಕೆ ಸಲಹೆಗಳು', preventionDesc: 'ಭವಿಷ್ಯದ ಸಂಭವನೆಗಳನ್ನು ತಡೆಯಿರಿ',
-    fileTooLarge: 'ಫೈಲ್ ತುಂಬಾ ದೊಡ್ಡದು', fileTooLargeDesc: '5MB ಒಳಗಿನ ಚಿತ್ರ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ', errorTitle: 'ದೋಷ', errorDesc: 'ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಲಕ್ಷಣಗಳನ್ನು ವಿವರಿಸಿ', analysisComplete: 'ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ', imageAnalyzed: 'AI ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ!', pestIdentified: 'ಕೀಟ/ರೋಗ ಗುರುತಿಸಲಾಗಿದೆ!', failedAnalysis: 'ವಿಶ್ಲೇಷಣೆ ವಿಫಲ',
+    results: 'ಪತ್ತೆ ಫಲಿತಾಂಶಗಳು', confidence: 'ವಿಶ್ವಾಸ', cnnTitle: 'CNN ವರ್ಗೀಕರಣ', cnnDesc: 'ಸಸ್ಯ ರೋಗ ಮಾಡೆಲ್', chemicalTitle: 'ರಾಸಾಯನಿಕ ಚಿಕಿತ್ಸೆ', chemicalDesc: 'ICAR-ಶಿಫಾರಸು ನಿಯಂತ್ರಣ', organicTitle: 'ಸಾವಯವ ಪರ್ಯಾಯಗಳು', organicDesc: 'ಪರಿಸರ ಸ್ನೇಹಿ ನಿಯಂತ್ರಣ', preventionTitle: 'ತಡೆಗಟ್ಟುವಿಕೆ ಸಲಹೆಗಳು', preventionDesc: 'ಭವಿಷ್ಯದ ಸಂಭವನೆಗಳನ್ನು ತಡೆಯಿರಿ',
+    fileTooLarge: 'ಫೈಲ್ ತುಂಬಾ ದೊಡ್ಡದು', fileTooLargeDesc: '5MB ಒಳಗಿನ ಚಿತ್ರ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ', errorTitle: 'ದೋಷ', errorDesc: 'ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ', analysisComplete: 'ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ', imageAnalyzed: 'AI ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ!', pestIdentified: 'ಕೀಟ/ರೋಗ ಗುರುತಿಸಲಾಗಿದೆ!', failedAnalysis: 'ವಿಶ್ಲೇಷಣೆ ವಿಫಲ',
     leaves: 'ಎಲೆಗಳು', stem: 'ಕಾಂಡ', roots: 'ಬೇರುಗಳು', fruits: 'ಹಣ್ಣುಗಳು', flowers: 'ಹೂವುಗಳು', wholePlant: 'ಇಡೀ ಸಸ್ಯ',
+    historyTitle: 'ವಿಶ್ಲೇಷಣೆ ಇತಿಹಾಸ', noHistory: 'ಇನ್ನೂ ವಿಶ್ಲೇಷಣೆ ಇಲ್ಲ', viewHistory: 'ಇತಿಹಾಸ ನೋಡಿ', hideHistory: 'ಇತಿಹಾಸ ಮರೆಮಾಡಿ',
   },
   bn: {
-    pageTitle: 'পোকা ও রোগ সনাক্তকরণ',
-    aiPowered: 'AI-চালিত সনাক্তকরণ',
-    aiDesc: 'AI চিত্র বিশ্লেষণের জন্য আপনার ফসলের ছবি আপলোড করুন, অথবা ICAR-প্রস্তাবিত চিকিৎসার সাথে তাৎক্ষণিক পোকা সনাক্তকরণের জন্য লক্ষণ বর্ণনা করুন।',
-    uploadTitle: 'ফসলের ছবি আপলোড', imageReady: '📸 ছবি AI বিশ্লেষণের জন্য প্রস্তুত', change: 'পরিবর্তন', takePhoto: 'ছবি তুলুন', uploadImage: 'ছবি আপলোড',
-    describeTitle: 'লক্ষণ বর্ণনা করুন', crop: 'ফসল', selectCrop: 'প্রভাবিত ফসল নির্বাচন', symptomsLabel: 'লক্ষণের বিবরণ', symptomsOptional: '(ছবির সাথে ঐচ্ছিক)', symptomsPlaceholder: 'আপনি যা পর্যবেক্ষণ করেছেন তা বর্ণনা করুন',
+    pageTitle: 'পোকা ও রোগ সনাক্তকরণ', aiPowered: 'AI-চালিত সনাক্তকরণ',
+    aiDesc: 'AI চিত্র বিশ্লেষণের জন্য আপনার ফসলের ছবি আপলোড করুন।',
+    uploadTitle: 'ফসলের ছবি আপলোড', imageReady: '📸 ছবি প্রস্তুত', change: 'পরিবর্তন', takePhoto: 'ছবি তুলুন', uploadImage: 'ছবি আপলোড',
+    describeTitle: 'লক্ষণ বর্ণনা করুন', crop: 'ফসল', selectCrop: 'প্রভাবিত ফসল নির্বাচন', symptomsLabel: 'লক্ষণের বিবরণ', symptomsOptional: '(ছবির সাথে ঐচ্ছিক)', symptomsPlaceholder: 'আপনি যা দেখেছেন তা বর্ণনা করুন।',
     affectedPart: 'প্রভাবিত অংশ', spread: 'বিস্তার', localized: 'স্থানীয়', spreading: 'ছড়াচ্ছে', widespread: 'ব্যাপক',
     analyzingImage: 'AI দিয়ে ছবি বিশ্লেষণ...', analyzing: 'বিশ্লেষণ...', analyzePhoto: 'AI দিয়ে ছবি বিশ্লেষণ', identifyPest: 'পোকা/রোগ সনাক্ত করুন',
-    results: 'সনাক্তকরণ ফলাফল', confidence: 'আত্মবিশ্বাস', cnnTitle: 'CNN শ্রেণীবিভাগ', cnnDesc: 'উদ্ভিদ রোগ মডেল', chemicalTitle: 'রাসায়নিক চিকিৎসা', chemicalDesc: 'ICAR-প্রস্তাবিত রাসায়নিক নিয়ন্ত্রণ', organicTitle: 'জৈব বিকল্প', organicDesc: 'পরিবেশবান্ধব নিয়ন্ত্রণ', preventionTitle: 'প্রতিরোধ পরামর্শ', preventionDesc: 'ভবিষ্যত সংক্রমণ প্রতিরোধ',
-    fileTooLarge: 'ফাইল খুব বড়', fileTooLargeDesc: '5MB-র কম ছবি আপলোড করুন', errorTitle: 'ত্রুটি', errorDesc: 'ফসল নির্বাচন করুন এবং লক্ষণ বর্ণনা করুন', analysisComplete: 'বিশ্লেষণ সম্পন্ন', imageAnalyzed: 'AI দিয়ে ছবি বিশ্লেষণ হয়েছে!', pestIdentified: 'পোকা/রোগ সনাক্ত হয়েছে!', failedAnalysis: 'বিশ্লেষণ ব্যর্থ',
+    results: 'সনাক্তকরণ ফলাফল', confidence: 'আত্মবিশ্বাস', cnnTitle: 'CNN শ্রেণীবিভাগ', cnnDesc: 'উদ্ভিদ রোগ মডেল', chemicalTitle: 'রাসায়নিক চিকিৎসা', chemicalDesc: 'ICAR-প্রস্তাবিত নিয়ন্ত্রণ', organicTitle: 'জৈব বিকল্প', organicDesc: 'পরিবেশবান্ধব নিয়ন্ত্রণ', preventionTitle: 'প্রতিরোধ পরামর্শ', preventionDesc: 'ভবিষ্যত সংক্রমণ প্রতিরোধ',
+    fileTooLarge: 'ফাইল খুব বড়', fileTooLargeDesc: '5MB-র কম ছবি আপলোড করুন', errorTitle: 'ত্রুটি', errorDesc: 'ফসল নির্বাচন করুন', analysisComplete: 'বিশ্লেষণ সম্পন্ন', imageAnalyzed: 'AI বিশ্লেষণ হয়েছে!', pestIdentified: 'পোকা/রোগ সনাক্ত!', failedAnalysis: 'বিশ্লেষণ ব্যর্থ',
     leaves: 'পাতা', stem: 'কান্ড', roots: 'শিকড়', fruits: 'ফল', flowers: 'ফুল', wholePlant: 'সম্পূর্ণ গাছ',
+    historyTitle: 'বিশ্লেষণ ইতিহাস', noHistory: 'এখনো কোনো বিশ্লেষণ নেই', viewHistory: 'ইতিহাস দেখুন', hideHistory: 'ইতিহাস লুকান',
   },
   pa: {
-    pageTitle: 'ਕੀੜੇ ਅਤੇ ਬਿਮਾਰੀ ਪਛਾਣ',
-    aiPowered: 'AI-ਸੰਚਾਲਿਤ ਪਛਾਣ',
+    pageTitle: 'ਕੀੜੇ ਅਤੇ ਬਿਮਾਰੀ ਪਛਾਣ', aiPowered: 'AI-ਸੰਚਾਲਿਤ ਪਛਾਣ',
     aiDesc: 'AI ਚਿੱਤਰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ ਆਪਣੀ ਫ਼ਸਲ ਦੀ ਫੋਟੋ ਅੱਪਲੋਡ ਕਰੋ।',
     uploadTitle: 'ਫ਼ਸਲ ਫੋਟੋ ਅੱਪਲੋਡ', imageReady: '📸 ਚਿੱਤਰ ਤਿਆਰ', change: 'ਬਦਲੋ', takePhoto: 'ਫੋਟੋ ਖਿੱਚੋ', uploadImage: 'ਚਿੱਤਰ ਅੱਪਲੋਡ',
-    describeTitle: 'ਲੱਛਣ ਦੱਸੋ', crop: 'ਫ਼ਸਲ', selectCrop: 'ਪ੍ਰਭਾਵਿਤ ਫ਼ਸਲ ਚੁਣੋ', symptomsLabel: 'ਲੱਛਣਾਂ ਦਾ ਵੇਰਵਾ', symptomsOptional: '(ਫੋਟੋ ਨਾਲ ਵਿਕਲਪਿਕ)', symptomsPlaceholder: 'ਤੁਸੀਂ ਜੋ ਦੇਖਦੇ ਹੋ ਦੱਸੋ',
+    describeTitle: 'ਲੱਛਣ ਦੱਸੋ', crop: 'ਫ਼ਸਲ', selectCrop: 'ਪ੍ਰਭਾਵਿਤ ਫ਼ਸਲ ਚੁਣੋ', symptomsLabel: 'ਲੱਛਣਾਂ ਦਾ ਵੇਰਵਾ', symptomsOptional: '(ਫੋਟੋ ਨਾਲ ਵਿਕਲਪਿਕ)', symptomsPlaceholder: 'ਤੁਸੀਂ ਜੋ ਦੇਖਦੇ ਹੋ ਦੱਸੋ।',
     affectedPart: 'ਪ੍ਰਭਾਵਿਤ ਹਿੱਸਾ', spread: 'ਫੈਲਾਅ', localized: 'ਸਥਾਨਕ', spreading: 'ਫੈਲ ਰਿਹਾ', widespread: 'ਵਿਆਪਕ',
-    analyzingImage: 'AI ਨਾਲ ਚਿੱਤਰ ਵਿਸ਼ਲੇਸ਼ਣ...', analyzing: 'ਵਿਸ਼ਲੇਸ਼ਣ...', analyzePhoto: 'AI ਨਾਲ ਫੋਟੋ ਵਿਸ਼ਲੇਸ਼ਣ', identifyPest: 'ਕੀੜੇ/ਬਿਮਾਰੀ ਪਛਾਣੋ',
+    analyzingImage: 'AI ਨਾਲ ਵਿਸ਼ਲੇਸ਼ਣ...', analyzing: 'ਵਿਸ਼ਲੇਸ਼ਣ...', analyzePhoto: 'AI ਨਾਲ ਫੋਟੋ ਵਿਸ਼ਲੇਸ਼ਣ', identifyPest: 'ਕੀੜੇ/ਬਿਮਾਰੀ ਪਛਾਣੋ',
     results: 'ਪਛਾਣ ਨਤੀਜੇ', confidence: 'ਭਰੋਸਾ', cnnTitle: 'CNN ਵਰਗੀਕਰਨ', cnnDesc: 'ਪੌਦਾ ਬਿਮਾਰੀ ਮਾਡਲ', chemicalTitle: 'ਰਸਾਇਣਿਕ ਇਲਾਜ', chemicalDesc: 'ICAR-ਸਿਫਾਰਸ਼ੀ ਨਿਯੰਤਰਣ', organicTitle: 'ਜੈਵਿਕ ਵਿਕਲਪ', organicDesc: 'ਵਾਤਾਵਰਨ-ਅਨੁਕੂਲ ਨਿਯੰਤਰਣ', preventionTitle: 'ਰੋਕਥਾਮ ਸੁਝਾਅ', preventionDesc: 'ਭਵਿੱਖ ਵਿੱਚ ਰੋਕਥਾਮ',
-    fileTooLarge: 'ਫ਼ਾਈਲ ਬਹੁਤ ਵੱਡੀ', fileTooLargeDesc: '5MB ਤੋਂ ਘੱਟ ਚਿੱਤਰ ਅੱਪਲੋਡ ਕਰੋ', errorTitle: 'ਗਲਤੀ', errorDesc: 'ਫ਼ਸਲ ਚੁਣੋ ਅਤੇ ਲੱਛਣ ਦੱਸੋ', analysisComplete: 'ਵਿਸ਼ਲੇਸ਼ਣ ਪੂਰਾ', imageAnalyzed: 'AI ਨਾਲ ਵਿਸ਼ਲੇਸ਼ਣ ਹੋਇਆ!', pestIdentified: 'ਕੀੜੇ/ਬਿਮਾਰੀ ਪਛਾਣੀ ਗਈ!', failedAnalysis: 'ਵਿਸ਼ਲੇਸ਼ਣ ਅਸਫਲ',
+    fileTooLarge: 'ਫ਼ਾਈਲ ਬਹੁਤ ਵੱਡੀ', fileTooLargeDesc: '5MB ਤੋਂ ਘੱਟ', errorTitle: 'ਗਲਤੀ', errorDesc: 'ਫ਼ਸਲ ਚੁਣੋ', analysisComplete: 'ਵਿਸ਼ਲੇਸ਼ਣ ਪੂਰਾ', imageAnalyzed: 'AI ਨਾਲ ਵਿਸ਼ਲੇਸ਼ਣ ਹੋਇਆ!', pestIdentified: 'ਪਛਾਣੀ ਗਈ!', failedAnalysis: 'ਵਿਸ਼ਲੇਸ਼ਣ ਅਸਫਲ',
     leaves: 'ਪੱਤੇ', stem: 'ਤਣਾ', roots: 'ਜੜ੍ਹਾਂ', fruits: 'ਫਲ', flowers: 'ਫੁੱਲ', wholePlant: 'ਪੂਰਾ ਪੌਦਾ',
+    historyTitle: 'ਵਿਸ਼ਲੇਸ਼ਣ ਇਤਿਹਾਸ', noHistory: 'ਅਜੇ ਕੋਈ ਵਿਸ਼ਲੇਸ਼ਣ ਨਹੀਂ', viewHistory: 'ਇਤਿਹਾਸ ਦੇਖੋ', hideHistory: 'ਇਤਿਹਾਸ ਲੁਕਾਓ',
   },
   mr: {
-    pageTitle: 'कीड आणि रोग ओळख',
-    aiPowered: 'AI-चालित ओळख',
-    aiDesc: 'AI प्रतिमा विश्लेषणासाठी तुमच्या पिकाचा फोटो अपलोड करा, किंवा ICAR-शिफारस केलेल्या उपचारांसह त्वरित कीड ओळखीसाठी लक्षणे वर्णन करा.',
-    uploadTitle: 'पिकाचा फोटो अपलोड', imageReady: '📸 प्रतिमा AI विश्लेषणासाठी तयार', change: 'बदला', takePhoto: 'फोटो काढा', uploadImage: 'प्रतिमा अपलोड',
-    describeTitle: 'लक्षणे वर्णन करा', crop: 'पीक', selectCrop: 'प्रभावित पीक निवडा', symptomsLabel: 'लक्षणांचे वर्णन', symptomsOptional: '(फोटोसह ऐच्छिक)', symptomsPlaceholder: 'तुम्ही काय पाहता ते वर्णन करा',
+    pageTitle: 'कीड आणि रोग ओळख', aiPowered: 'AI-चालित ओळख',
+    aiDesc: 'AI प्रतिमा विश्लेषणासाठी तुमच्या पिकाचा फोटो अपलोड करा.',
+    uploadTitle: 'पिकाचा फोटो अपलोड', imageReady: '📸 प्रतिमा तयार', change: 'बदला', takePhoto: 'फोटो काढा', uploadImage: 'प्रतिमा अपलोड',
+    describeTitle: 'लक्षणे वर्णन करा', crop: 'पीक', selectCrop: 'प्रभावित पीक निवडा', symptomsLabel: 'लक्षणांचे वर्णन', symptomsOptional: '(फोटोसह ऐच्छिक)', symptomsPlaceholder: 'तुम्ही काय पाहता ते वर्णन करा.',
     affectedPart: 'प्रभावित भाग', spread: 'प्रसार', localized: 'स्थानिक', spreading: 'पसरत आहे', widespread: 'व्यापक',
-    analyzingImage: 'AI ने प्रतिमा विश्लेषण...', analyzing: 'विश्लेषण...', analyzePhoto: 'AI ने फोटो विश्लेषण', identifyPest: 'कीड/रोग ओळखा',
-    results: 'ओळख निकाल', confidence: 'विश्वास', cnnTitle: 'CNN वर्गीकरण', cnnDesc: 'वनस्पती रोग मॉडेल', chemicalTitle: 'रासायनिक उपचार', chemicalDesc: 'ICAR-शिफारस रासायनिक नियंत्रण', organicTitle: 'सेंद्रिय पर्याय', organicDesc: 'पर्यावरणपूरक नियंत्रण', preventionTitle: 'प्रतिबंध टिपा', preventionDesc: 'भविष्यातील प्रतिबंध',
-    fileTooLarge: 'फाइल खूप मोठी', fileTooLargeDesc: '5MB पेक्षा कमी प्रतिमा अपलोड करा', errorTitle: 'त्रुटी', errorDesc: 'पीक निवडा आणि लक्षणे वर्णन करा', analysisComplete: 'विश्लेषण पूर्ण', imageAnalyzed: 'AI ने विश्लेषण झाले!', pestIdentified: 'कीड/रोग ओळखला!', failedAnalysis: 'विश्लेषण अयशस्वी',
+    analyzingImage: 'AI ने विश्लेषण...', analyzing: 'विश्लेषण...', analyzePhoto: 'AI ने फोटो विश्लेषण', identifyPest: 'कीड/रोग ओळखा',
+    results: 'ओळख निकाल', confidence: 'विश्वास', cnnTitle: 'CNN वर्गीकरण', cnnDesc: 'वनस्पती रोग मॉडेल', chemicalTitle: 'रासायनिक उपचार', chemicalDesc: 'ICAR-शिफारस नियंत्रण', organicTitle: 'सेंद्रिय पर्याय', organicDesc: 'पर्यावरणपूरक नियंत्रण', preventionTitle: 'प्रतिबंध टिपा', preventionDesc: 'भविष्यातील प्रतिबंध',
+    fileTooLarge: 'फाइल खूप मोठी', fileTooLargeDesc: '5MB पेक्षा कमी', errorTitle: 'त्रुटी', errorDesc: 'पीक निवडा', analysisComplete: 'विश्लेषण पूर्ण', imageAnalyzed: 'AI ने विश्लेषण झाले!', pestIdentified: 'कीड/रोग ओळखला!', failedAnalysis: 'विश्लेषण अयशस्वी',
     leaves: 'पाने', stem: 'खोड', roots: 'मुळे', fruits: 'फळे', flowers: 'फुले', wholePlant: 'संपूर्ण झाड',
+    historyTitle: 'विश्लेषण इतिहास', noHistory: 'अजून कोणतेही विश्लेषण नाही', viewHistory: 'इतिहास पहा', hideHistory: 'इतिहास लपवा',
   },
 };
 
 export default function PestDetection() {
   const { language } = useLanguage();
   const { toast } = useToast();
+  const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [cnnScores, setCnnScores] = useState<CnnScore[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   const pt = useMemo(() => pestTranslations[language] || pestTranslations.en, [language]);
 
@@ -307,6 +317,50 @@ export default function PestDetection() {
     { value: 'whole_plant', label: pt.wholePlant },
   ];
 
+  // Fetch history on mount
+  useEffect(() => {
+    if (user) {
+      fetchHistory();
+    }
+  }, [user]);
+
+  const fetchHistory = async () => {
+    if (!user) return;
+    setLoadingHistory(true);
+    try {
+      const { data, error } = await supabase
+        .from('pest_detections')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (!error && data) {
+        setHistory(data as HistoryItem[]);
+      }
+    } catch (e) {
+      console.error('Failed to fetch history:', e);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const saveToHistory = async (detectionResult: DetectionResult) => {
+    if (!user) return;
+    try {
+      await supabase.from('pest_detections').insert({
+        user_id: user.id,
+        detected_pest: detectionResult.pest,
+        confidence_score: detectionResult.confidence,
+        severity: detectionResult.severity,
+        treatment_recommendation: Array.isArray(detectionResult.treatment) ? detectionResult.treatment.join('; ') : detectionResult.treatment,
+        ai_response: detectionResult as any,
+      });
+      fetchHistory();
+    } catch (e) {
+      console.error('Failed to save history:', e);
+    }
+  };
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -346,17 +400,21 @@ export default function PestDetection() {
       if (error) throw error;
 
       if (data?.success && data?.data) {
-        setResult({
-          pest: data.data.pest || data.data.identification || 'Unknown',
+        const detectionResult: DetectionResult = {
+          pest: data.data.pest || data.data.identification || 'Unidentified',
           confidence: data.data.confidence || 0.8,
           severity: data.data.severity || 'medium',
           description: data.data.description || '',
           treatment: data.data.treatment || data.data.chemical_control || [],
           organic_alternatives: data.data.organic_alternatives || data.data.biological_control || [],
           prevention: data.data.prevention || data.data.preventive_measures || [],
-        });
+        };
+        setResult(detectionResult);
         setCnnScores(data.cnn_scores || []);
         toast({ title: pt.analysisComplete, description: selectedImage ? pt.imageAnalyzed : pt.pestIdentified });
+        
+        // Save to history
+        saveToHistory(detectionResult);
       } else {
         throw new Error(data?.error || 'Failed to analyze');
       }
@@ -373,13 +431,30 @@ export default function PestDetection() {
   };
 
   const getSeverityColor = (severity: string) => {
-    switch (severity.toLowerCase()) {
+    switch (severity?.toLowerCase()) {
       case 'low': return 'bg-success/20 text-success border-success/30';
       case 'medium': return 'bg-warning/20 text-warning border-warning/30';
       case 'high': return 'bg-destructive/20 text-destructive border-destructive/30';
       case 'critical': return 'bg-destructive text-destructive-foreground';
       default: return 'bg-muted text-muted-foreground';
     }
+  };
+
+  const loadHistoryItem = (item: HistoryItem) => {
+    const aiResp = item.ai_response as any;
+    if (aiResp) {
+      setResult({
+        pest: aiResp.pest || item.detected_pest || '',
+        confidence: aiResp.confidence || item.confidence_score || 0,
+        severity: aiResp.severity || item.severity || 'medium',
+        description: aiResp.description || '',
+        treatment: aiResp.treatment || [],
+        organic_alternatives: aiResp.organic_alternatives || [],
+        prevention: aiResp.prevention || [],
+      });
+    }
+    setCnnScores([]);
+    setShowHistory(false);
   };
 
   return (
@@ -398,57 +473,83 @@ export default function PestDetection() {
         </Card>
       </PageSection>
 
+      {/* History Toggle */}
+      {user && (
+        <PageSection>
+          <Button
+            variant="outline"
+            onClick={() => setShowHistory(!showHistory)}
+            className="w-full gap-2"
+          >
+            <History className="w-4 h-4" />
+            {showHistory ? pt.hideHistory : pt.viewHistory}
+            {showHistory ? <ChevronUp className="w-4 h-4 ml-auto" /> : <ChevronDown className="w-4 h-4 ml-auto" />}
+          </Button>
+
+          {showHistory && (
+            <div className="mt-3 space-y-2">
+              {loadingHistory ? (
+                <div className="flex justify-center py-4">
+                  <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : history.length === 0 ? (
+                <p className="text-center text-sm text-muted-foreground py-4">{pt.noHistory}</p>
+              ) : (
+                history.map((item) => (
+                  <Card
+                    key={item.id}
+                    className="cursor-pointer hover:bg-accent/50 transition-colors"
+                    onClick={() => loadHistoryItem(item)}
+                  >
+                    <CardContent className="p-3 flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{item.detected_pest || 'N/A'}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Clock className="w-3 h-3" />
+                          {new Date(item.created_at).toLocaleDateString(language === 'en' ? 'en-IN' : `${language}-IN`)}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {item.confidence_score && (
+                          <span className="text-xs text-muted-foreground">{Math.round(item.confidence_score * 100)}%</span>
+                        )}
+                        {item.severity && (
+                          <Badge variant="outline" className={`text-xs ${getSeverityColor(item.severity)}`}>
+                            {item.severity.toUpperCase()}
+                          </Badge>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          )}
+        </PageSection>
+      )}
+
       {/* Image Upload */}
       <PageSection title={pt.uploadTitle}>
         <Card>
           <CardContent className="p-4">
-            {/* Camera input - always has capture */}
-            <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleImageSelect}
-              className="hidden"
-            />
-            {/* Gallery input - no capture attribute */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageSelect}
-              className="hidden"
-            />
+            <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageSelect} className="hidden" />
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" />
             
             {selectedImage ? (
               <div className="relative">
                 <img src={selectedImage} alt="Selected" className="w-full h-48 object-cover rounded-lg" />
                 <div className="absolute top-2 right-2 flex gap-2">
                   <Badge className="bg-success">{pt.imageReady}</Badge>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setSelectedImage(null)}
-                  >
-                    {pt.change}
-                  </Button>
+                  <Button variant="secondary" size="sm" onClick={() => setSelectedImage(null)}>{pt.change}</Button>
                 </div>
               </div>
             ) : (
               <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => cameraInputRef.current?.click()}
-                  className="flex-1 h-24 flex-col gap-2"
-                >
+                <Button variant="outline" onClick={() => cameraInputRef.current?.click()} className="flex-1 h-24 flex-col gap-2">
                   <Camera className="w-8 h-8" />
                   <span>{pt.takePhoto}</span>
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 h-24 flex-col gap-2"
-                >
+                <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="flex-1 h-24 flex-col gap-2">
                   <Upload className="w-8 h-8" />
                   <span>{pt.uploadImage}</span>
                 </Button>
@@ -465,13 +566,9 @@ export default function PestDetection() {
             <div>
               <Label>{pt.crop}</Label>
               <Select value={formData.crop} onValueChange={(v) => setFormData({ ...formData, crop: v })}>
-                <SelectTrigger className="h-12">
-                  <SelectValue placeholder={pt.selectCrop} />
-                </SelectTrigger>
+                <SelectTrigger className="h-12"><SelectValue placeholder={pt.selectCrop} /></SelectTrigger>
                 <SelectContent>
-                  {crops.map((crop) => (
-                    <SelectItem key={crop.value} value={crop.value}>{crop.label}</SelectItem>
-                  ))}
+                  {crops.map((crop) => (<SelectItem key={crop.value} value={crop.value}>{crop.label}</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
@@ -490,22 +587,16 @@ export default function PestDetection() {
               <div>
                 <Label>{pt.affectedPart}</Label>
                 <Select value={formData.affectedPart} onValueChange={(v) => setFormData({ ...formData, affectedPart: v })}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue />
-                  </SelectTrigger>
+                  <SelectTrigger className="h-12"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {affectedParts.map((part) => (
-                      <SelectItem key={part.value} value={part.value}>{part.label}</SelectItem>
-                    ))}
+                    {affectedParts.map((part) => (<SelectItem key={part.value} value={part.value}>{part.label}</SelectItem>))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label>{pt.spread}</Label>
                 <Select value={formData.spread} onValueChange={(v) => setFormData({ ...formData, spread: v })}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue />
-                  </SelectTrigger>
+                  <SelectTrigger className="h-12"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="localized">{pt.localized}</SelectItem>
                     <SelectItem value="spreading">{pt.spreading}</SelectItem>
@@ -519,21 +610,11 @@ export default function PestDetection() {
       </PageSection>
 
       <PageSection>
-        <Button
-          onClick={handleAnalyze}
-          disabled={isLoading}
-          className="w-full h-14 text-lg gap-2"
-        >
+        <Button onClick={handleAnalyze} disabled={isLoading} className="w-full h-14 text-lg gap-2">
           {isLoading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              {selectedImage ? pt.analyzingImage : pt.analyzing}
-            </>
+            <><Loader2 className="w-5 h-5 animate-spin" />{selectedImage ? pt.analyzingImage : pt.analyzing}</>
           ) : (
-            <>
-              <Bug className="w-5 h-5" />
-              {selectedImage ? pt.analyzePhoto : pt.identifyPest}
-            </>
+            <><Bug className="w-5 h-5" />{selectedImage ? pt.analyzePhoto : pt.identifyPest}</>
           )}
         </Button>
       </PageSection>
@@ -547,9 +628,7 @@ export default function PestDetection() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-xl font-bold">{result.pest}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {pt.confidence}: {Math.round(result.confidence * 100)}%
-                    </p>
+                    <p className="text-sm text-muted-foreground">{pt.confidence}: {Math.round(result.confidence * 100)}%</p>
                   </div>
                   <Badge variant="outline" className={getSeverityColor(result.severity)}>
                     <AlertTriangle className="w-4 h-4 mr-1" />
@@ -566,7 +645,6 @@ export default function PestDetection() {
             </Card>
           </PageSection>
 
-          {/* CNN Classification Bar Chart */}
           {cnnScores.length > 0 && (
             <PageSection title={pt.cnnTitle}>
               <Card>
@@ -596,11 +674,7 @@ export default function PestDetection() {
                         />
                         <Bar dataKey="confidence" radius={[0, 4, 4, 0]}>
                           {cnnScores.map((_, index) => (
-                            <Cell
-                              key={index}
-                              fill={index === 0 ? 'hsl(var(--primary))' : index === 1 ? 'hsl(var(--warning))' : 'hsl(var(--muted-foreground))'}
-                              fillOpacity={index === 0 ? 1 : 0.6}
-                            />
+                            <Cell key={index} fill={index === 0 ? 'hsl(var(--primary))' : index === 1 ? 'hsl(var(--warning))' : 'hsl(var(--muted-foreground))'} fillOpacity={index === 0 ? 1 : 0.6} />
                           ))}
                         </Bar>
                       </BarChart>
@@ -622,9 +696,7 @@ export default function PestDetection() {
                   <ul className="space-y-2">
                     {(Array.isArray(result.treatment) ? result.treatment : [result.treatment]).map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2 p-2 bg-secondary/50 rounded-lg">
-                        <span className="w-6 h-6 bg-info/20 text-info rounded-full flex items-center justify-center text-sm font-medium shrink-0">
-                          {idx + 1}
-                        </span>
+                        <span className="w-6 h-6 bg-info/20 text-info rounded-full flex items-center justify-center text-sm font-medium shrink-0">{idx + 1}</span>
                         <span className="text-sm">{item}</span>
                       </li>
                     ))}
@@ -645,9 +717,7 @@ export default function PestDetection() {
                   <ul className="space-y-2">
                     {(Array.isArray(result.organic_alternatives) ? result.organic_alternatives : [result.organic_alternatives]).map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2 p-2 bg-success/10 rounded-lg">
-                        <span className="w-6 h-6 bg-success/20 text-success rounded-full flex items-center justify-center text-sm font-medium shrink-0">
-                          {idx + 1}
-                        </span>
+                        <span className="w-6 h-6 bg-success/20 text-success rounded-full flex items-center justify-center text-sm font-medium shrink-0">{idx + 1}</span>
                         <span className="text-sm">{item}</span>
                       </li>
                     ))}
