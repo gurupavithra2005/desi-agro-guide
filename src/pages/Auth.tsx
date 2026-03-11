@@ -142,20 +142,7 @@ export default function Auth() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Auth Method Tabs */}
-            <Tabs value={authMethod} onValueChange={(v) => setAuthMethod(v as 'email' | 'phone')}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="email" className="gap-2">
-                  <Mail className="w-4 h-4" />
-                  {t('email')}
-                </TabsTrigger>
-                <TabsTrigger value="phone" className="gap-2">
-                  <Phone className="w-4 h-4" />
-                  {t('phoneNumber')}
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="email" className="space-y-4 mt-4">
+            <div className="space-y-4">
                 <div className="space-y-2">
                   <Input
                     type="email"
@@ -199,77 +186,7 @@ export default function Auth() {
                   {isLoading ? t('loading') : authMode === 'login' ? t('login') : t('signup')}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
-              </TabsContent>
-
-              <TabsContent value="phone" className="space-y-4 mt-4">
-                {!showOtpInput ? (
-                  <>
-                    <div className="space-y-2">
-                      <Input
-                        type="tel"
-                        placeholder="+91 9876543210"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="h-12 text-base"
-                      />
-                      {errors.phone && (
-                        <p className="text-destructive text-sm">{errors.phone}</p>
-                      )}
-                    </div>
-                    <Button
-                      onClick={handleSendOtp}
-                      disabled={isLoading}
-                      className="w-full h-12 text-base gap-2"
-                    >
-                      {isLoading ? t('loading') : t('sendOtp')}
-                      <ArrowRight className="w-5 h-5" />
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <div className="space-y-3">
-                      <p className="text-sm text-muted-foreground text-center">
-                        {t('enterOtp')}
-                      </p>
-                      <div className="flex justify-center">
-                        <InputOTP
-                          maxLength={6}
-                          value={otp}
-                          onChange={setOtp}
-                        >
-                          <InputOTPGroup>
-                            <InputOTPSlot index={0} />
-                            <InputOTPSlot index={1} />
-                            <InputOTPSlot index={2} />
-                            <InputOTPSlot index={3} />
-                            <InputOTPSlot index={4} />
-                            <InputOTPSlot index={5} />
-                          </InputOTPGroup>
-                        </InputOTP>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={handleVerifyOtp}
-                      disabled={isLoading || otp.length !== 6}
-                      className="w-full h-12 text-base gap-2"
-                    >
-                      {isLoading ? t('loading') : t('verifyOtp')}
-                      <ArrowRight className="w-5 h-5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => {
-                        setShowOtpInput(false);
-                        setOtp('');
-                      }}
-                      className="w-full"
-                    >
-                      {t('back')}
-                    </Button>
-                  </>
-                )}
-              </TabsContent>
-            </Tabs>
+            </div>
 
             {/* Toggle Auth Mode */}
             <div className="text-center pt-2">
