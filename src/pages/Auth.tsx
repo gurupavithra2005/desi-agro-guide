@@ -27,8 +27,6 @@ export default function Auth() {
   // Form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
 
   // Validation errors
   const [errors, setErrors] = useState<{ email?: string; password?: string; phone?: string }>({});
