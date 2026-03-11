@@ -21,8 +21,6 @@ export default function Auth() {
   const { toast } = useToast();
 
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
-  const [showOtpInput, setShowOtpInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
