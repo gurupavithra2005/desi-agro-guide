@@ -5,8 +5,6 @@ import appIcon from '@/assets/app-icon.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage, LANGUAGES } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
