@@ -16,7 +16,7 @@ const passwordSchema = z.string().min(6, 'Password must be at least 6 characters
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { user, signInWithEmail, signUpWithEmail, signInWithPhone, verifyOtp } = useAuth();
+  const { user, signInWithEmail, signUpWithEmail } = useAuth();
   const { t, language, setLanguage } = useLanguage();
   const { toast } = useToast();
 
