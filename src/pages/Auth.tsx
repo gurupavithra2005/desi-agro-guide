@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf, Phone, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Leaf, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import appIcon from '@/assets/app-icon.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
