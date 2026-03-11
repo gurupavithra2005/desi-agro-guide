@@ -40,7 +40,7 @@ serve(async (req) => {
       });
     }
 
-    const { state brisket, district, commodity } = await req.json();
+    const { state, district, commodity } = await req.json();
     
     // Use service role for DB writes (inserting fetched prices)
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
