@@ -101,67 +101,6 @@ export default function Auth() {
     }
   };
 
-  const handleSendOtp = async () => {
-    try {
-      phoneSchema.parse(phone);
-      setErrors(prev => ({ ...prev, phone: undefined }));
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        setErrors(prev => ({ ...prev, phone: e.errors[0].message }));
-        return;
-      }
-    }
-
-    setIsLoading(true);
-    try {
-      const { error } = await signInWithPhone(phone);
-      if (error) {
-        toast({
-          variant: 'destructive',
-          title: t('error'),
-          description: error.message,
-        });
-      } else {
-        setShowOtpInput(true);
-        toast({
-          title: t('success'),
-          description: 'OTP sent to your phone number.',
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: t('error'),
-        description: 'Failed to send OTP. Please try again.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    if (otp.length !== 6) return;
-
-    setIsLoading(true);
-    try {
-      const { error } = await verifyOtp(phone, otp);
-      if (error) {
-        toast({
-          variant: 'destructive',
-          title: t('error'),
-          description: error.message,
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: t('error'),
-        description: 'Failed to verify OTP. Please try again.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 flex flex-col">
