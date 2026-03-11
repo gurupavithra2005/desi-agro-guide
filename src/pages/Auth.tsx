@@ -12,7 +12,7 @@ import { z } from 'zod';
 
 const emailSchema = z.string().email('Please enter a valid email');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
-const phoneSchema = z.string().regex(/^\+?[1-9]\d{9,14}$/, 'Please enter a valid phone number');
+
 
 export default function Auth() {
   const navigate = useNavigate();
