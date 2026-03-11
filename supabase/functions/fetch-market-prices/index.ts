@@ -27,7 +27,10 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Try fetching from data.gov.in API (Agmarknet)
-    const API_KEY = "579b464db66ec23bdd000001b17d12ae734549c658e45de109352e8e";
+    const API_KEY = Deno.env.get("DATA_GOV_API_KEY");
+    if (!API_KEY) {
+      throw new Error("DATA_GOV_API_KEY is not configured");
+    }
     const baseUrl = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070";
     
     const params = new URLSearchParams({
