@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf, Phone, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Leaf, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import appIcon from '@/assets/app-icon.png';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage, LANGUAGES } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
@@ -13,25 +12,21 @@ import { z } from 'zod';
 
 const emailSchema = z.string().email('Please enter a valid email');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
-const phoneSchema = z.string().regex(/^\+?[1-9]\d{9,14}$/, 'Please enter a valid phone number');
+
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { user, signInWithEmail, signUpWithEmail, signInWithPhone, verifyOtp } = useAuth();
+  const { user, signInWithEmail, signUpWithEmail } = useAuth();
   const { t, language, setLanguage } = useLanguage();
   const { toast } = useToast();
 
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
-  const [showOtpInput, setShowOtpInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   // Form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
 
   // Validation errors
   const [errors, setErrors] = useState<{ email?: string; password?: string; phone?: string }>({});
@@ -106,67 +101,6 @@ export default function Auth() {
     }
   };
 
-  const handleSendOtp = async () => {
-    try {
-      phoneSchema.parse(phone);
-      setErrors(prev => ({ ...prev, phone: undefined }));
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        setErrors(prev => ({ ...prev, phone: e.errors[0].message }));
-        return;
-      }
-    }
-
-    setIsLoading(true);
-    try {
-      const { error } = await signInWithPhone(phone);
-      if (error) {
-        toast({
-          variant: 'destructive',
-          title: t('error'),
-          description: error.message,
-        });
-      } else {
-        setShowOtpInput(true);
-        toast({
-          title: t('success'),
-          description: 'OTP sent to your phone number.',
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: t('error'),
-        description: 'Failed to send OTP. Please try again.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    if (otp.length !== 6) return;
-
-    setIsLoading(true);
-    try {
-      const { error } = await verifyOtp(phone, otp);
-      if (error) {
-        toast({
-          variant: 'destructive',
-          title: t('error'),
-          description: error.message,
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: t('error'),
-        description: 'Failed to verify OTP. Please try again.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 flex flex-col">
@@ -188,9 +122,7 @@ export default function Auth() {
       {/* Hero Section */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-2xl mb-4">
-            <Leaf className="w-12 h-12 text-primary-foreground" />
-          </div>
+          <img src={appIcon} alt="Smart Crop Advisory System" className="w-20 h-20 object-contain rounded-2xl mb-4" />
           <h1 className="text-3xl font-bold text-foreground mb-2">{t('appName')}</h1>
           <p className="text-muted-foreground text-lg">
             Smart Farming Advisory System
@@ -210,20 +142,7 @@ export default function Auth() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Auth Method Tabs */}
-            <Tabs value={authMethod} onValueChange={(v) => setAuthMethod(v as 'email' | 'phone')}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="email" className="gap-2">
-                  <Mail className="w-4 h-4" />
-                  {t('email')}
-                </TabsTrigger>
-                <TabsTrigger value="phone" className="gap-2">
-                  <Phone className="w-4 h-4" />
-                  {t('phoneNumber')}
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="email" className="space-y-4 mt-4">
+            <div className="space-y-4">
                 <div className="space-y-2">
                   <Input
                     type="email"
@@ -267,77 +186,7 @@ export default function Auth() {
                   {isLoading ? t('loading') : authMode === 'login' ? t('login') : t('signup')}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
-              </TabsContent>
-
-              <TabsContent value="phone" className="space-y-4 mt-4">
-                {!showOtpInput ? (
-                  <>
-                    <div className="space-y-2">
-                      <Input
-                        type="tel"
-                        placeholder="+91 9876543210"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="h-12 text-base"
-                      />
-                      {errors.phone && (
-                        <p className="text-destructive text-sm">{errors.phone}</p>
-                      )}
-                    </div>
-                    <Button
-                      onClick={handleSendOtp}
-                      disabled={isLoading}
-                      className="w-full h-12 text-base gap-2"
-                    >
-                      {isLoading ? t('loading') : t('sendOtp')}
-                      <ArrowRight className="w-5 h-5" />
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <div className="space-y-3">
-                      <p className="text-sm text-muted-foreground text-center">
-                        {t('enterOtp')}
-                      </p>
-                      <div className="flex justify-center">
-                        <InputOTP
-                          maxLength={6}
-                          value={otp}
-                          onChange={setOtp}
-                        >
-                          <InputOTPGroup>
-                            <InputOTPSlot index={0} />
-                            <InputOTPSlot index={1} />
-                            <InputOTPSlot index={2} />
-                            <InputOTPSlot index={3} />
-                            <InputOTPSlot index={4} />
-                            <InputOTPSlot index={5} />
-                          </InputOTPGroup>
-                        </InputOTP>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={handleVerifyOtp}
-                      disabled={isLoading || otp.length !== 6}
-                      className="w-full h-12 text-base gap-2"
-                    >
-                      {isLoading ? t('loading') : t('verifyOtp')}
-                      <ArrowRight className="w-5 h-5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => {
-                        setShowOtpInput(false);
-                        setOtp('');
-                      }}
-                      className="w-full"
-                    >
-                      {t('back')}
-                    </Button>
-                  </>
-                )}
-              </TabsContent>
-            </Tabs>
+            </div>
 
             {/* Toggle Auth Mode */}
             <div className="text-center pt-2">
