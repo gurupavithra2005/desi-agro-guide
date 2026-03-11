@@ -122,9 +122,7 @@ export default function Auth() {
       {/* Hero Section */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-2xl mb-4">
-            <Leaf className="w-12 h-12 text-primary-foreground" />
-          </div>
+          <img src={appIcon} alt="Smart Crop Advisory System" className="w-20 h-20 object-contain rounded-2xl mb-4" />
           <h1 className="text-3xl font-bold text-foreground mb-2">{t('appName')}</h1>
           <p className="text-muted-foreground text-lg">
             Smart Farming Advisory System
