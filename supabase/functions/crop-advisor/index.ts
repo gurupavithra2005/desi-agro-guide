@@ -278,7 +278,8 @@ ${ICAR_KNOWLEDGE}
 5. If CNN classification results are provided, use the TOP CNN prediction as your primary diagnosis unless your visual analysis strongly contradicts it.
 6. Give confidence between 0.5-0.95. Use 0.5-0.6 for uncertain diagnoses, 0.7-0.8 for probable, 0.85+ for confident.
 7. Always provide SPECIFIC chemical names with exact dosages from ICAR recommendations.
-8. Respond ONLY in ${langName} language.
+8. Respond ONLY in ${langName} language. Every word of your diagnosis, description, treatment names, organic methods, and prevention tips MUST be in ${langName}. DO NOT use English for any text descriptions. Only chemical formulas, scientific names in parentheses, and units are allowed in English.
+9. If ${langName} is Tamil, write everything in Tamil script (தமிழ்). If Hindi, in Devanagari. And so on.
 
 ## DIAGNOSIS DECISION TREE:
 - Spots/lesions on leaves → Check pattern: concentric rings = Early Blight, diamond = Blast, circular brown = Cercospora, orange pustules = Rust
