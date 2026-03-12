@@ -178,7 +178,12 @@ ${ICAR_KNOWLEDGE}
 
 Based on the farmer's location, soil, and conditions, recommend the best crops.
 For each crop provide: crop_name, local_name, reason, yield, profit_potential (low/medium/high), water_requirement (low/medium/high), growth_duration, fertilizer_dose (N-P-K kg/ha).
-Always respond in ${langName}. Format as JSON with "recommendations" array.`;
+
+## CRITICAL LANGUAGE INSTRUCTION:
+You MUST respond ENTIRELY in ${langName} language. Every single word - crop names, reasons, descriptions, tips - ALL must be in ${langName}.
+DO NOT mix English in your response. If the language is Tamil, write everything in Tamil script. If Hindi, in Devanagari. Only numbers, units (kg/ha), and chemical symbols are exempt.
+
+Format as JSON with "recommendations" array.`;
 
         userPrompt = `Recommend crops for:
 Location: ${data.state || 'Not specified'}, ${data.district || 'Not specified'}
@@ -191,7 +196,7 @@ N: ${data.nitrogen || 'N/A'} kg/ha, P: ${data.phosphorus || 'N/A'} kg/ha, K: ${d
 Irrigation: ${data.irrigation || 'Rainfed'}
 Previous Crop: ${data.previousCrop || 'Not specified'}
 
-Provide 5-6 recommendations with fertilizer doses.`;
+Provide 5-6 recommendations with fertilizer doses. Your ENTIRE response must be in ${langName}.`;
         messages = [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }];
         break;
 
@@ -201,7 +206,13 @@ ${ICAR_KNOWLEDGE}
 
 Provide precise fertilizer recommendations with split application schedules.
 For each fertilizer: type, quantity_kg_per_ha, application_method, timing_days_after_sowing, cost_estimate.
-Always respond in ${langName}. Format as JSON with "fertilizers" array and "schedule" array.`;
+
+## CRITICAL LANGUAGE INSTRUCTION:
+You MUST respond ENTIRELY in ${langName} language. Every single word of your response - fertilizer names (translated), quantities, methods, schedule descriptions, tips - ALL must be in ${langName}.
+DO NOT mix English in your response. If the language is Tamil, write everything in Tamil script. If Hindi, write everything in Devanagari. And so on for all languages.
+The only exceptions are: chemical formulas (NPK, DAP, MOP), units (kg/ha, g/L), and numbers.
+
+Format as JSON with "fertilizers" array and "schedule" array.`;
 
         userPrompt = `Fertilizer plan for:
 Crop: ${data.crop || 'Not specified'}
@@ -210,7 +221,9 @@ Growth Stage: ${data.growthStage || 'Basal'}
 pH: ${data.soilPh || 'N/A'}, N: ${data.nitrogen || 'N/A'}, P: ${data.phosphorus || 'N/A'}, K: ${data.potassium || 'N/A'}
 Organic Carbon: ${data.organicCarbon || 'N/A'}%
 Target Yield: ${data.targetYield || 'Moderate'}
-Irrigation: ${data.irrigation || 'Rainfed'}`;
+Irrigation: ${data.irrigation || 'Rainfed'}
+
+IMPORTANT: Your ENTIRE response must be in ${langName}. All field names, descriptions, methods, timing labels - EVERYTHING in ${langName}.`;
         messages = [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }];
         break;
 
@@ -265,7 +278,8 @@ ${ICAR_KNOWLEDGE}
 5. If CNN classification results are provided, use the TOP CNN prediction as your primary diagnosis unless your visual analysis strongly contradicts it.
 6. Give confidence between 0.5-0.95. Use 0.5-0.6 for uncertain diagnoses, 0.7-0.8 for probable, 0.85+ for confident.
 7. Always provide SPECIFIC chemical names with exact dosages from ICAR recommendations.
-8. Respond ONLY in ${langName} language.
+8. Respond ONLY in ${langName} language. Every word of your diagnosis, description, treatment names, organic methods, and prevention tips MUST be in ${langName}. DO NOT use English for any text descriptions. Only chemical formulas, scientific names in parentheses, and units are allowed in English.
+9. If ${langName} is Tamil, write everything in Tamil script (தமிழ்). If Hindi, in Devanagari. And so on.
 
 ## DIAGNOSIS DECISION TREE:
 - Spots/lesions on leaves → Check pattern: concentric rings = Early Blight, diamond = Blast, circular brown = Cercospora, orange pustules = Rust
@@ -293,7 +307,7 @@ Affected Part: ${data.affectedPart || 'Leaves'}
 Spread Pattern: ${data.spread || 'Not specified'}
 Duration: ${data.duration || 'Not specified'}${hfClassification}
 
-CRITICAL REMINDER: You MUST provide a specific disease/pest name. "Unknown" is NOT acceptable. Use the diagnosis decision tree and CNN results to determine the most likely disease. If truly no disease is present, say "Healthy Plant - No Disease Detected".`;
+CRITICAL REMINDER: You MUST provide a specific disease/pest name. "Unknown" is NOT acceptable. Use the diagnosis decision tree and CNN results to determine the most likely disease. If truly no disease is present, say "Healthy Plant - No Disease Detected". YOUR ENTIRE RESPONSE MUST BE IN ${langName} - all descriptions, treatment names, prevention tips, everything in ${langName} script.`;
 
         if (data.imageBase64) {
           messages = [
@@ -321,7 +335,10 @@ Given a soil type, provide matching crops with:
   fertilizer_n, fertilizer_p, fertilizer_k (all in kg/ha),
   expected_yield, growth_days, tips
 
-Always respond in ${langName}. Format as JSON with "crops" array.`;
+## CRITICAL LANGUAGE INSTRUCTION:
+You MUST respond ENTIRELY in ${langName}. All crop names, descriptions, tips - everything in ${langName} script. Only numbers, units (kg/ha), and chemical symbols are exempt.
+
+Format as JSON with "crops" array.`;
 
         userPrompt = `Recommend crops for:
 Soil Type: ${data.soilType}

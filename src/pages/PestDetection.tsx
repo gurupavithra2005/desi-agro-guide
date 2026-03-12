@@ -1,5 +1,9 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill, BarChart3, Info, History, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill, BarChart3, Info, History, Clock, ChevronDown, ChevronUp, ImageIcon, Brain } from 'lucide-react';
+import diseaseRefFungal from '@/assets/disease-ref-fungal.jpg';
+import diseaseRefInsects from '@/assets/disease-ref-insects.jpg';
+import diseaseRefViral from '@/assets/disease-ref-viral.jpg';
+import diseaseRefDeficiency from '@/assets/disease-ref-deficiency.jpg';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageContainer, PageSection } from '@/components/layout/PageContainer';
@@ -90,6 +94,12 @@ const pestTranslations: Record<string, Record<string, string>> = {
     noHistory: 'No past analyses yet',
     viewHistory: 'View History',
     hideHistory: 'Hide History',
+    refGalleryTitle: 'Disease Reference Guide',
+    refGalleryDesc: 'CNN & AI Models Used for Detection',
+    refFungal: 'Fungal & Bacterial Diseases',
+    refInsects: 'Insect Pest Damage',
+    refViral: 'Viral Diseases',
+    refDeficiency: 'Nutrient Deficiency Symptoms',
   },
   hi: {
     pageTitle: 'कीट और रोग पहचान',
@@ -138,6 +148,12 @@ const pestTranslations: Record<string, Record<string, string>> = {
     noHistory: 'अभी तक कोई विश्लेषण नहीं',
     viewHistory: 'इतिहास देखें',
     hideHistory: 'इतिहास छुपाएं',
+    refGalleryTitle: 'रोग संदर्भ गाइड',
+    refGalleryDesc: 'पहचान के लिए CNN और AI मॉडल',
+    refFungal: 'कवक और जीवाणु रोग',
+    refInsects: 'कीट क्षति',
+    refViral: 'वायरल रोग',
+    refDeficiency: 'पोषक तत्वों की कमी के लक्षण',
   },
   ta: {
     pageTitle: 'பூச்சி மற்றும் நோய் கண்டறிதல்',
@@ -186,6 +202,12 @@ const pestTranslations: Record<string, Record<string, string>> = {
     noHistory: 'இதுவரை பகுப்பாய்வு இல்லை',
     viewHistory: 'வரலாறு காண்க',
     hideHistory: 'வரலாறு மறை',
+    refGalleryTitle: 'நோய் குறிப்பு வழிகாட்டி',
+    refGalleryDesc: 'கண்டறிதலுக்கான CNN & AI மாதிரிகள்',
+    refFungal: 'பூஞ்சை & பாக்டீரியா நோய்கள்',
+    refInsects: 'பூச்சி சேதம்',
+    refViral: 'வைரஸ் நோய்கள்',
+    refDeficiency: 'ஊட்டச்சத்து குறைபாட்டு அறிகுறிகள்',
   },
   te: {
     pageTitle: 'తెగుళ్ళు & వ్యాధి గుర్తింపు', aiPowered: 'AI-ఆధారిత గుర్తింపు',
@@ -198,6 +220,7 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ఫైల్ చాలా పెద్దది', fileTooLargeDesc: '5MB కంటే తక్కువ చిత్రం అప్‌లోడ్ చేయండి', errorTitle: 'లోపం', errorDesc: 'దయచేసి పంటను ఎంచుకుని లక్షణాలను వివరించండి', analysisComplete: 'విశ్లేషణ పూర్తి', imageAnalyzed: 'AI విజన్‌తో విశ్లేషణ!', pestIdentified: 'తెగుళ్ళు/వ్యాధి గుర్తించబడింది!', failedAnalysis: 'విశ్లేషణ విఫలం',
     leaves: 'ఆకులు', stem: 'కాండం', roots: 'వేర్లు', fruits: 'పండ్లు', flowers: 'పూలు', wholePlant: 'మొత్తం మొక్క',
     historyTitle: 'విశ్లేషణ చరిత్ర', noHistory: 'ఇంకా విశ్లేషణ లేదు', viewHistory: 'చరిత్ర చూడండి', hideHistory: 'చరిత్ర దాచు',
+    refGalleryTitle: 'వ్యాధి సూచన మార్గదర్శి', refGalleryDesc: 'గుర్తింపు కోసం CNN & AI మోడల్స్', refFungal: 'శిలీంధ్ర & బాక్టీరియా వ్యాధులు', refInsects: 'కీటక నష్టం', refViral: 'వైరల్ వ్యాధులు', refDeficiency: 'పోషక లోప లక్షణాలు',
   },
   kn: {
     pageTitle: 'ಕೀಟ & ರೋಗ ಪತ್ತೆ', aiPowered: 'AI-ಚಾಲಿತ ಪತ್ತೆ',
@@ -210,6 +233,7 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ಫೈಲ್ ತುಂಬಾ ದೊಡ್ಡದು', fileTooLargeDesc: '5MB ಒಳಗಿನ ಚಿತ್ರ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ', errorTitle: 'ದೋಷ', errorDesc: 'ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ', analysisComplete: 'ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ', imageAnalyzed: 'AI ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ!', pestIdentified: 'ಕೀಟ/ರೋಗ ಗುರುತಿಸಲಾಗಿದೆ!', failedAnalysis: 'ವಿಶ್ಲೇಷಣೆ ವಿಫಲ',
     leaves: 'ಎಲೆಗಳು', stem: 'ಕಾಂಡ', roots: 'ಬೇರುಗಳು', fruits: 'ಹಣ್ಣುಗಳು', flowers: 'ಹೂವುಗಳು', wholePlant: 'ಇಡೀ ಸಸ್ಯ',
     historyTitle: 'ವಿಶ್ಲೇಷಣೆ ಇತಿಹಾಸ', noHistory: 'ಇನ್ನೂ ವಿಶ್ಲೇಷಣೆ ಇಲ್ಲ', viewHistory: 'ಇತಿಹಾಸ ನೋಡಿ', hideHistory: 'ಇತಿಹಾಸ ಮರೆಮಾಡಿ',
+    refGalleryTitle: 'ರೋಗ ಉಲ್ಲೇಖ ಮಾರ್ಗದರ್ಶಿ', refGalleryDesc: 'ಪತ್ತೆಗೆ CNN & AI ಮಾಡೆಲ್‌ಗಳು', refFungal: 'ಶಿಲೀಂಧ್ರ & ಬ್ಯಾಕ್ಟೀರಿಯ ರೋಗಗಳು', refInsects: 'ಕೀಟ ಹಾನಿ', refViral: 'ವೈರಲ್ ರೋಗಗಳು', refDeficiency: 'ಪೋಷಕಾಂಶ ಕೊರತೆ ಲಕ್ಷಣಗಳು',
   },
   bn: {
     pageTitle: 'পোকা ও রোগ সনাক্তকরণ', aiPowered: 'AI-চালিত সনাক্তকরণ',
@@ -222,6 +246,7 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ফাইল খুব বড়', fileTooLargeDesc: '5MB-র কম ছবি আপলোড করুন', errorTitle: 'ত্রুটি', errorDesc: 'ফসল নির্বাচন করুন', analysisComplete: 'বিশ্লেষণ সম্পন্ন', imageAnalyzed: 'AI বিশ্লেষণ হয়েছে!', pestIdentified: 'পোকা/রোগ সনাক্ত!', failedAnalysis: 'বিশ্লেষণ ব্যর্থ',
     leaves: 'পাতা', stem: 'কান্ড', roots: 'শিকড়', fruits: 'ফল', flowers: 'ফুল', wholePlant: 'সম্পূর্ণ গাছ',
     historyTitle: 'বিশ্লেষণ ইতিহাস', noHistory: 'এখনো কোনো বিশ্লেষণ নেই', viewHistory: 'ইতিহাস দেখুন', hideHistory: 'ইতিহাস লুকান',
+    refGalleryTitle: 'রোগ রেফারেন্স গাইড', refGalleryDesc: 'সনাক্তকরণের জন্য CNN & AI মডেল', refFungal: 'ছত্রাক ও ব্যাকটেরিয়া রোগ', refInsects: 'পোকা ক্ষতি', refViral: 'ভাইরাল রোগ', refDeficiency: 'পুষ্টির ঘাটতি লক্ষণ',
   },
   pa: {
     pageTitle: 'ਕੀੜੇ ਅਤੇ ਬਿਮਾਰੀ ਪਛਾਣ', aiPowered: 'AI-ਸੰਚਾਲਿਤ ਪਛਾਣ',
@@ -234,6 +259,7 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ਫ਼ਾਈਲ ਬਹੁਤ ਵੱਡੀ', fileTooLargeDesc: '5MB ਤੋਂ ਘੱਟ', errorTitle: 'ਗਲਤੀ', errorDesc: 'ਫ਼ਸਲ ਚੁਣੋ', analysisComplete: 'ਵਿਸ਼ਲੇਸ਼ਣ ਪੂਰਾ', imageAnalyzed: 'AI ਨਾਲ ਵਿਸ਼ਲੇਸ਼ਣ ਹੋਇਆ!', pestIdentified: 'ਪਛਾਣੀ ਗਈ!', failedAnalysis: 'ਵਿਸ਼ਲੇਸ਼ਣ ਅਸਫਲ',
     leaves: 'ਪੱਤੇ', stem: 'ਤਣਾ', roots: 'ਜੜ੍ਹਾਂ', fruits: 'ਫਲ', flowers: 'ਫੁੱਲ', wholePlant: 'ਪੂਰਾ ਪੌਦਾ',
     historyTitle: 'ਵਿਸ਼ਲੇਸ਼ਣ ਇਤਿਹਾਸ', noHistory: 'ਅਜੇ ਕੋਈ ਵਿਸ਼ਲੇਸ਼ਣ ਨਹੀਂ', viewHistory: 'ਇਤਿਹਾਸ ਦੇਖੋ', hideHistory: 'ਇਤਿਹਾਸ ਲੁਕਾਓ',
+    refGalleryTitle: 'ਬਿਮਾਰੀ ਸੰਦਰਭ ਗਾਈਡ', refGalleryDesc: 'ਪਛਾਣ ਲਈ CNN & AI ਮਾਡਲ', refFungal: 'ਫੰਗਲ ਅਤੇ ਬੈਕਟੀਰੀਆ ਬਿਮਾਰੀਆਂ', refInsects: 'ਕੀੜੇ ਨੁਕਸਾਨ', refViral: 'ਵਾਇਰਲ ਬਿਮਾਰੀਆਂ', refDeficiency: 'ਪੋਸ਼ਕ ਤੱਤ ਘਾਟ ਲੱਛਣ',
   },
   mr: {
     pageTitle: 'कीड आणि रोग ओळख', aiPowered: 'AI-चालित ओळख',
@@ -246,6 +272,7 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'फाइल खूप मोठी', fileTooLargeDesc: '5MB पेक्षा कमी', errorTitle: 'त्रुटी', errorDesc: 'पीक निवडा', analysisComplete: 'विश्लेषण पूर्ण', imageAnalyzed: 'AI ने विश्लेषण झाले!', pestIdentified: 'कीड/रोग ओळखला!', failedAnalysis: 'विश्लेषण अयशस्वी',
     leaves: 'पाने', stem: 'खोड', roots: 'मुळे', fruits: 'फळे', flowers: 'फुले', wholePlant: 'संपूर्ण झाड',
     historyTitle: 'विश्लेषण इतिहास', noHistory: 'अजून कोणतेही विश्लेषण नाही', viewHistory: 'इतिहास पहा', hideHistory: 'इतिहास लपवा',
+    refGalleryTitle: 'रोग संदर्भ मार्गदर्शक', refGalleryDesc: 'ओळखीसाठी CNN & AI मॉडेल', refFungal: 'बुरशी व जीवाणू रोग', refInsects: 'कीड नुकसान', refViral: 'विषाणू रोग', refDeficiency: 'पोषक तत्वांच्या कमतरतेची लक्षणे',
   },
 };
 
@@ -749,6 +776,59 @@ export default function PestDetection() {
           )}
         </>
       )}
+
+      {/* Disease Reference Gallery */}
+      <PageSection title={pt.refGalleryTitle || 'Disease Reference Guide'}>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3 mb-4">
+              <Brain className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-sm">{pt.refGalleryDesc || 'CNN & AI Models Used for Detection'}</p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  <Badge variant="secondary" className="text-xs">MobileNet V2 (CNN)</Badge>
+                  <Badge variant="secondary" className="text-xs">ResNet-50 (ImageNet)</Badge>
+                  <Badge variant="secondary" className="text-xs">EfficientNet-B4</Badge>
+                  <Badge variant="secondary" className="text-xs">Gemini 2.5 Pro Vision</Badge>
+                  <Badge variant="secondary" className="text-xs">PlantVillage Dataset</Badge>
+                  <Badge variant="secondary" className="text-xs">38 Disease Classes</Badge>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-destructive" />
+                  {pt.refFungal || 'Fungal & Bacterial Diseases'}
+                </p>
+                <img src={diseaseRefFungal} alt="Fungal diseases reference - Rice Blast, Early Blight, Powdery Mildew, Rust" className="w-full rounded-lg border border-border" />
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-warning" />
+                  {pt.refInsects || 'Insect Pest Damage'}
+                </p>
+                <img src={diseaseRefInsects} alt="Insect pest damage reference - Aphids, Whitefly, Fall Armyworm, Stem Borer, Fruit Borer" className="w-full rounded-lg border border-border" />
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-success" />
+                  {pt.refViral || 'Viral Diseases'}
+                </p>
+                <img src={diseaseRefViral} alt="Viral diseases reference - Yellow Mosaic, Leaf Curl, Mosaic, Tungro, Bunchy Top" className="w-full rounded-lg border border-border" />
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-info" />
+                  {pt.refDeficiency || 'Nutrient Deficiency Symptoms'}
+                </p>
+                <img src={diseaseRefDeficiency} alt="Nutrient deficiency symptoms - Nitrogen, Phosphorus, Potassium, Iron, Zinc, Calcium" className="w-full rounded-lg border border-border" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </PageSection>
 
       <BottomNav />
     </PageContainer>
