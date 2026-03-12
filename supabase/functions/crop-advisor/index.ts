@@ -307,7 +307,7 @@ Affected Part: ${data.affectedPart || 'Leaves'}
 Spread Pattern: ${data.spread || 'Not specified'}
 Duration: ${data.duration || 'Not specified'}${hfClassification}
 
-CRITICAL REMINDER: You MUST provide a specific disease/pest name. "Unknown" is NOT acceptable. Use the diagnosis decision tree and CNN results to determine the most likely disease. If truly no disease is present, say "Healthy Plant - No Disease Detected".`;
+CRITICAL REMINDER: You MUST provide a specific disease/pest name. "Unknown" is NOT acceptable. Use the diagnosis decision tree and CNN results to determine the most likely disease. If truly no disease is present, say "Healthy Plant - No Disease Detected". YOUR ENTIRE RESPONSE MUST BE IN ${langName} - all descriptions, treatment names, prevention tips, everything in ${langName} script.`;
 
         if (data.imageBase64) {
           messages = [
