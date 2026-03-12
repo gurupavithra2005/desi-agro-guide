@@ -202,6 +202,12 @@ const pestTranslations: Record<string, Record<string, string>> = {
     noHistory: 'இதுவரை பகுப்பாய்வு இல்லை',
     viewHistory: 'வரலாறு காண்க',
     hideHistory: 'வரலாறு மறை',
+    refGalleryTitle: 'நோய் குறிப்பு வழிகாட்டி',
+    refGalleryDesc: 'கண்டறிதலுக்கான CNN & AI மாதிரிகள்',
+    refFungal: 'பூஞ்சை & பாக்டீரியா நோய்கள்',
+    refInsects: 'பூச்சி சேதம்',
+    refViral: 'வைரஸ் நோய்கள்',
+    refDeficiency: 'ஊட்டச்சத்து குறைபாட்டு அறிகுறிகள்',
   },
   te: {
     pageTitle: 'తెగుళ్ళు & వ్యాధి గుర్తింపు', aiPowered: 'AI-ఆధారిత గుర్తింపు',
