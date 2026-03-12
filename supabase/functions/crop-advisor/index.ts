@@ -335,7 +335,10 @@ Given a soil type, provide matching crops with:
   fertilizer_n, fertilizer_p, fertilizer_k (all in kg/ha),
   expected_yield, growth_days, tips
 
-Always respond in ${langName}. Format as JSON with "crops" array.`;
+## CRITICAL LANGUAGE INSTRUCTION:
+You MUST respond ENTIRELY in ${langName}. All crop names, descriptions, tips - everything in ${langName} script. Only numbers, units (kg/ha), and chemical symbols are exempt.
+
+Format as JSON with "crops" array.`;
 
         userPrompt = `Recommend crops for:
 Soil Type: ${data.soilType}
