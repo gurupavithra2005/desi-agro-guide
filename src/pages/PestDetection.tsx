@@ -246,6 +246,7 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ফাইল খুব বড়', fileTooLargeDesc: '5MB-র কম ছবি আপলোড করুন', errorTitle: 'ত্রুটি', errorDesc: 'ফসল নির্বাচন করুন', analysisComplete: 'বিশ্লেষণ সম্পন্ন', imageAnalyzed: 'AI বিশ্লেষণ হয়েছে!', pestIdentified: 'পোকা/রোগ সনাক্ত!', failedAnalysis: 'বিশ্লেষণ ব্যর্থ',
     leaves: 'পাতা', stem: 'কান্ড', roots: 'শিকড়', fruits: 'ফল', flowers: 'ফুল', wholePlant: 'সম্পূর্ণ গাছ',
     historyTitle: 'বিশ্লেষণ ইতিহাস', noHistory: 'এখনো কোনো বিশ্লেষণ নেই', viewHistory: 'ইতিহাস দেখুন', hideHistory: 'ইতিহাস লুকান',
+    refGalleryTitle: 'রোগ রেফারেন্স গাইড', refGalleryDesc: 'সনাক্তকরণের জন্য CNN & AI মডেল', refFungal: 'ছত্রাক ও ব্যাকটেরিয়া রোগ', refInsects: 'পোকা ক্ষতি', refViral: 'ভাইরাল রোগ', refDeficiency: 'পুষ্টির ঘাটতি লক্ষণ',
   },
   pa: {
     pageTitle: 'ਕੀੜੇ ਅਤੇ ਬਿਮਾਰੀ ਪਛਾਣ', aiPowered: 'AI-ਸੰਚਾਲਿਤ ਪਛਾਣ',
