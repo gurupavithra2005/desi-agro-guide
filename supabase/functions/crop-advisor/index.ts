@@ -201,7 +201,13 @@ ${ICAR_KNOWLEDGE}
 
 Provide precise fertilizer recommendations with split application schedules.
 For each fertilizer: type, quantity_kg_per_ha, application_method, timing_days_after_sowing, cost_estimate.
-Always respond in ${langName}. Format as JSON with "fertilizers" array and "schedule" array.`;
+
+## CRITICAL LANGUAGE INSTRUCTION:
+You MUST respond ENTIRELY in ${langName} language. Every single word of your response - fertilizer names (translated), quantities, methods, schedule descriptions, tips - ALL must be in ${langName}.
+DO NOT mix English in your response. If the language is Tamil, write everything in Tamil script. If Hindi, write everything in Devanagari. And so on for all languages.
+The only exceptions are: chemical formulas (NPK, DAP, MOP), units (kg/ha, g/L), and numbers.
+
+Format as JSON with "fertilizers" array and "schedule" array.`;
 
         userPrompt = `Fertilizer plan for:
 Crop: ${data.crop || 'Not specified'}
@@ -210,7 +216,9 @@ Growth Stage: ${data.growthStage || 'Basal'}
 pH: ${data.soilPh || 'N/A'}, N: ${data.nitrogen || 'N/A'}, P: ${data.phosphorus || 'N/A'}, K: ${data.potassium || 'N/A'}
 Organic Carbon: ${data.organicCarbon || 'N/A'}%
 Target Yield: ${data.targetYield || 'Moderate'}
-Irrigation: ${data.irrigation || 'Rainfed'}`;
+Irrigation: ${data.irrigation || 'Rainfed'}
+
+IMPORTANT: Your ENTIRE response must be in ${langName}. All field names, descriptions, methods, timing labels - EVERYTHING in ${langName}.`;
         messages = [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }];
         break;
 
