@@ -94,6 +94,12 @@ const pestTranslations: Record<string, Record<string, string>> = {
     noHistory: 'No past analyses yet',
     viewHistory: 'View History',
     hideHistory: 'Hide History',
+    refGalleryTitle: 'Disease Reference Guide',
+    refGalleryDesc: 'CNN & AI Models Used for Detection',
+    refFungal: 'Fungal & Bacterial Diseases',
+    refInsects: 'Insect Pest Damage',
+    refViral: 'Viral Diseases',
+    refDeficiency: 'Nutrient Deficiency Symptoms',
   },
   hi: {
     pageTitle: 'कीट और रोग पहचान',
