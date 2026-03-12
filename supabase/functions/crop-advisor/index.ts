@@ -178,7 +178,12 @@ ${ICAR_KNOWLEDGE}
 
 Based on the farmer's location, soil, and conditions, recommend the best crops.
 For each crop provide: crop_name, local_name, reason, yield, profit_potential (low/medium/high), water_requirement (low/medium/high), growth_duration, fertilizer_dose (N-P-K kg/ha).
-Always respond in ${langName}. Format as JSON with "recommendations" array.`;
+
+## CRITICAL LANGUAGE INSTRUCTION:
+You MUST respond ENTIRELY in ${langName} language. Every single word - crop names, reasons, descriptions, tips - ALL must be in ${langName}.
+DO NOT mix English in your response. If the language is Tamil, write everything in Tamil script. If Hindi, in Devanagari. Only numbers, units (kg/ha), and chemical symbols are exempt.
+
+Format as JSON with "recommendations" array.`;
 
         userPrompt = `Recommend crops for:
 Location: ${data.state || 'Not specified'}, ${data.district || 'Not specified'}
@@ -191,7 +196,7 @@ N: ${data.nitrogen || 'N/A'} kg/ha, P: ${data.phosphorus || 'N/A'} kg/ha, K: ${d
 Irrigation: ${data.irrigation || 'Rainfed'}
 Previous Crop: ${data.previousCrop || 'Not specified'}
 
-Provide 5-6 recommendations with fertilizer doses.`;
+Provide 5-6 recommendations with fertilizer doses. Your ENTIRE response must be in ${langName}.`;
         messages = [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }];
         break;
 
