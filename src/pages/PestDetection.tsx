@@ -754,6 +754,59 @@ export default function PestDetection() {
         </>
       )}
 
+      {/* Disease Reference Gallery */}
+      <PageSection title={pt.refGalleryTitle || 'Disease Reference Guide'}>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3 mb-4">
+              <Brain className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-sm">{pt.refGalleryDesc || 'CNN & AI Models Used for Detection'}</p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  <Badge variant="secondary" className="text-xs">MobileNet V2 (CNN)</Badge>
+                  <Badge variant="secondary" className="text-xs">ResNet-50 (ImageNet)</Badge>
+                  <Badge variant="secondary" className="text-xs">EfficientNet-B4</Badge>
+                  <Badge variant="secondary" className="text-xs">Gemini 2.5 Pro Vision</Badge>
+                  <Badge variant="secondary" className="text-xs">PlantVillage Dataset</Badge>
+                  <Badge variant="secondary" className="text-xs">38 Disease Classes</Badge>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-destructive" />
+                  {pt.refFungal || 'Fungal & Bacterial Diseases'}
+                </p>
+                <img src={diseaseRefFungal} alt="Fungal diseases reference - Rice Blast, Early Blight, Powdery Mildew, Rust" className="w-full rounded-lg border border-border" />
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-warning" />
+                  {pt.refInsects || 'Insect Pest Damage'}
+                </p>
+                <img src={diseaseRefInsects} alt="Insect pest damage reference - Aphids, Whitefly, Fall Armyworm, Stem Borer, Fruit Borer" className="w-full rounded-lg border border-border" />
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-success" />
+                  {pt.refViral || 'Viral Diseases'}
+                </p>
+                <img src={diseaseRefViral} alt="Viral diseases reference - Yellow Mosaic, Leaf Curl, Mosaic, Tungro, Bunchy Top" className="w-full rounded-lg border border-border" />
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-info" />
+                  {pt.refDeficiency || 'Nutrient Deficiency Symptoms'}
+                </p>
+                <img src={diseaseRefDeficiency} alt="Nutrient deficiency symptoms - Nitrogen, Phosphorus, Potassium, Iron, Zinc, Calcium" className="w-full rounded-lg border border-border" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </PageSection>
+
       <BottomNav />
     </PageContainer>
   );
