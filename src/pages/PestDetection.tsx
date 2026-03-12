@@ -148,6 +148,12 @@ const pestTranslations: Record<string, Record<string, string>> = {
     noHistory: 'अभी तक कोई विश्लेषण नहीं',
     viewHistory: 'इतिहास देखें',
     hideHistory: 'इतिहास छुपाएं',
+    refGalleryTitle: 'रोग संदर्भ गाइड',
+    refGalleryDesc: 'पहचान के लिए CNN और AI मॉडल',
+    refFungal: 'कवक और जीवाणु रोग',
+    refInsects: 'कीट क्षति',
+    refViral: 'वायरल रोग',
+    refDeficiency: 'पोषक तत्वों की कमी के लक्षण',
   },
   ta: {
     pageTitle: 'பூச்சி மற்றும் நோய் கண்டறிதல்',
