@@ -144,7 +144,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'విశ్లేషిస్తోంది...', getAdvice: 'ఎరువుల సలహా పొందండి', resultsTitle: 'సిఫార్సు చేసిన ఎరువులు', method: 'పద్ధతి', estCost: 'అంచనా ఖర్చు', scheduleTitle: 'వాడకం షెడ్యూల్',
     error: 'లోపం', errorDesc: 'పంటను ఎంచుకోండి', success: 'విజయం', successDesc: 'ఎరువుల సిఫార్సులు సిద్ధం!',
     basal: 'బేసల్ (విత్తనానికి ముందు)', vegetative: 'వృక్ష దశ', flowering: 'పుష్పించే దశ', fruiting: 'ఫలాల దశ',
-    irrigation: 'నీటి పారుదల', rainfed: 'వర్షాధారం', irrigated: 'నీటి పారుదల', targetYield: 'లక్ష్య దిగుబడి', moderate: 'మధ్యస్తం', high: 'అధికం', das: 'DAS',
+     irrigation: 'నీటి పారుదల', rainfed: 'వర్షాధారం', irrigated: 'నీటి పారుదల', targetYield: 'లక్ష్య దిగుబడి', moderate: 'మధ్యస్తం', high: 'అధికం', das: 'DAS',
+    translateBtn: 'తెలుగులో అనువదించండి', translating: 'అనువదిస్తోంది...',
   },
   kn: {
     stcrTitle: 'STCR ಆಧಾರಿತ ಶಿಫಾರಸುಗಳು', stcrDesc: 'ಮಣ್ಣಿನ ಪರೀಕ್ಷೆ ಫಲಿತಾಂಶಗಳ ಆಧಾರದ ಮೇಲೆ ವೈಯಕ್ತಿಕ ಗೊಬ್ಬರ ಸಲಹೆ ಪಡೆಯಿರಿ.',
