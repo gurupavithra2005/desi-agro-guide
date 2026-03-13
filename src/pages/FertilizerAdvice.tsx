@@ -59,6 +59,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     moderate: 'Moderate',
     high: 'High',
     das: 'DAS',
+    translateBtn: 'Translate Results',
+    translating: 'Translating...',
   },
   hi: {
     stcrTitle: 'STCR-आधारित सिफारिशें',
