@@ -282,7 +282,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'फाइल खूप मोठी', fileTooLargeDesc: '5MB पेक्षा कमी', errorTitle: 'त्रुटी', errorDesc: 'पीक निवडा', analysisComplete: 'विश्लेषण पूर्ण', imageAnalyzed: 'AI ने विश्लेषण झाले!', pestIdentified: 'कीड/रोग ओळखला!', failedAnalysis: 'विश्लेषण अयशस्वी',
     leaves: 'पाने', stem: 'खोड', roots: 'मुळे', fruits: 'फळे', flowers: 'फुले', wholePlant: 'संपूर्ण झाड',
     historyTitle: 'विश्लेषण इतिहास', noHistory: 'अजून कोणतेही विश्लेषण नाही', viewHistory: 'इतिहास पहा', hideHistory: 'इतिहास लपवा',
-    refGalleryTitle: 'रोग संदर्भ मार्गदर्शक', refGalleryDesc: 'ओळखीसाठी CNN & AI मॉडेल', refFungal: 'बुरशी व जीवाणू रोग', refInsects: 'कीड नुकसान', refViral: 'विषाणू रोग', refDeficiency: 'पोषक तत्वांच्या कमतरतेची लक्षणे',
+     refGalleryTitle: 'रोग संदर्भ मार्गदर्शक', refGalleryDesc: 'ओळखीसाठी CNN & AI मॉडेल', refFungal: 'बुरशी व जीवाणू रोग', refInsects: 'कीड नुकसान', refViral: 'विषाणू रोग', refDeficiency: 'पोषक तत्वांच्या कमतरतेची लक्षणे',
+    translateBtn: 'मराठीत अनुवाद करा', translating: 'अनुवाद होत आहे...',
   },
 };
 
