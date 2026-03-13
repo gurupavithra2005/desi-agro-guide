@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill, BarChart3, Info, History, Clock, ChevronDown, ChevronUp, ImageIcon, Brain } from 'lucide-react';
+import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill, BarChart3, Info, History, Clock, ChevronDown, ChevronUp, ImageIcon, Brain, Languages } from 'lucide-react';
 import diseaseRefFungal from '@/assets/disease-ref-fungal.jpg';
 import diseaseRefInsects from '@/assets/disease-ref-insects.jpg';
 import diseaseRefViral from '@/assets/disease-ref-viral.jpg';
