@@ -97,7 +97,7 @@ const fertTranslations: Record<string, Record<string, string>> = {
     targetYield: 'लक्ष्य उपज',
     moderate: 'मध्यम',
     high: 'उच्च',
-    das: 'DAS',
+    das: 'DAS', translateBtn: 'हिंदी में अनुवाद करें', translating: 'अनुवाद हो रहा है...',
   },
   ta: {
     stcrTitle: 'STCR அடிப்படையிலான பரிந்துரைகள்',
