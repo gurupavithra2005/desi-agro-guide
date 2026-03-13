@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Droplets, Leaf, FlaskConical, Calendar, Calculator, Loader2, ChevronRight, AlertCircle } from 'lucide-react';
+import { Droplets, Leaf, FlaskConical, Calendar, Calculator, Loader2, ChevronRight, AlertCircle, Languages } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageContainer, PageSection } from '@/components/layout/PageContainer';
