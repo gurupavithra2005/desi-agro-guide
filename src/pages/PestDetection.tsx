@@ -89,7 +89,7 @@ const pestTranslations: Record<string, Record<string, string>> = {
     imageAnalyzed: 'Image analyzed with AI vision!',
     pestIdentified: 'Pest/disease identified!',
     failedAnalysis: 'Failed to analyze pest/disease',
-    leaves: 'Leaves', stem: 'Stem', roots: 'Roots', fruits: 'Fruits', flowers: 'Flowers', wholePlant: 'Whole Plant',
+     leaves: 'Leaves', stem: 'Stem', roots: 'Roots', fruits: 'Fruits', flowers: 'Flowers', wholePlant: 'Whole Plant',
     historyTitle: 'Analysis History',
     noHistory: 'No past analyses yet',
     viewHistory: 'View History',
@@ -100,6 +100,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     refInsects: 'Insect Pest Damage',
     refViral: 'Viral Diseases',
     refDeficiency: 'Nutrient Deficiency Symptoms',
+    translateBtn: 'Translate Results to Tamil',
+    translating: 'Translating...',
   },
   hi: {
     pageTitle: 'कीट और रोग पहचान',
