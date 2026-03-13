@@ -314,6 +314,39 @@ export default function FertilizerAdvice() {
     }
   };
 
+  const handleTranslateResult = async () => {
+    if (recommendations.length === 0) return;
+    setIsTranslating(true);
+    try {
+      const resultSummary = recommendations.map(r => `${r.name}: ${r.quantity}, ${r.timing}, ${r.method}`).join('; ');
+      const scheduleSummary = schedule.map(s => `${s.stage || s.timing}: ${s.description || s.fertilizer}`).join('; ');
+      
+      const { data, error } = await supabase.functions.invoke('crop-advisor', {
+        body: {
+          type: 'fertilizer_advice',
+          data: {
+            ...formData,
+            crop: `${formData.crop}. TRANSLATE the following existing results into the user's language: Fertilizers: ${resultSummary}. Schedule: ${scheduleSummary}`,
+          },
+          language,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.success && data?.data) {
+        if (data.data.fertilizers?.length > 0) setRecommendations(data.data.fertilizers);
+        if (data.data.schedule?.length > 0) setSchedule(data.data.schedule);
+        toast({ title: ft.success, description: ft.translateBtn });
+      }
+    } catch (error: any) {
+      console.error('Translation error:', error);
+      toast({ variant: 'destructive', title: ft.error, description: error.message });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   return (
     <PageContainer>
       <AppHeader title={t('fertilizerAdvice')} />
