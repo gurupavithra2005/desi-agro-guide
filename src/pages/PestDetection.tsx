@@ -240,7 +240,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ಫೈಲ್ ತುಂಬಾ ದೊಡ್ಡದು', fileTooLargeDesc: '5MB ಒಳಗಿನ ಚಿತ್ರ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ', errorTitle: 'ದೋಷ', errorDesc: 'ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ', analysisComplete: 'ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ', imageAnalyzed: 'AI ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ!', pestIdentified: 'ಕೀಟ/ರೋಗ ಗುರುತಿಸಲಾಗಿದೆ!', failedAnalysis: 'ವಿಶ್ಲೇಷಣೆ ವಿಫಲ',
     leaves: 'ಎಲೆಗಳು', stem: 'ಕಾಂಡ', roots: 'ಬೇರುಗಳು', fruits: 'ಹಣ್ಣುಗಳು', flowers: 'ಹೂವುಗಳು', wholePlant: 'ಇಡೀ ಸಸ್ಯ',
     historyTitle: 'ವಿಶ್ಲೇಷಣೆ ಇತಿಹಾಸ', noHistory: 'ಇನ್ನೂ ವಿಶ್ಲೇಷಣೆ ಇಲ್ಲ', viewHistory: 'ಇತಿಹಾಸ ನೋಡಿ', hideHistory: 'ಇತಿಹಾಸ ಮರೆಮಾಡಿ',
-    refGalleryTitle: 'ರೋಗ ಉಲ್ಲೇಖ ಮಾರ್ಗದರ್ಶಿ', refGalleryDesc: 'ಪತ್ತೆಗೆ CNN & AI ಮಾಡೆಲ್‌ಗಳು', refFungal: 'ಶಿಲೀಂಧ್ರ & ಬ್ಯಾಕ್ಟೀರಿಯ ರೋಗಗಳು', refInsects: 'ಕೀಟ ಹಾನಿ', refViral: 'ವೈರಲ್ ರೋಗಗಳು', refDeficiency: 'ಪೋಷಕಾಂಶ ಕೊರತೆ ಲಕ್ಷಣಗಳು',
+     refGalleryTitle: 'ರೋಗ ಉಲ್ಲೇಖ ಮಾರ್ಗದರ್ಶಿ', refGalleryDesc: 'ಪತ್ತೆಗೆ CNN & AI ಮಾಡೆಲ್‌ಗಳು', refFungal: 'ಶಿಲೀಂಧ್ರ & ಬ್ಯಾಕ್ಟೀರಿಯ ರೋಗಗಳು', refInsects: 'ಕೀಟ ಹಾನಿ', refViral: 'ವೈರಲ್ ರೋಗಗಳು', refDeficiency: 'ಪೋಷಕಾಂಶ ಕೊರತೆ ಲಕ್ಷಣಗಳು',
+    translateBtn: 'ಕನ್ನಡಕ್ಕೆ ಅನುವಾದಿಸಿ', translating: 'ಅನುವಾದಿಸಲಾಗುತ್ತಿದೆ...',
   },
   bn: {
     pageTitle: 'পোকা ও রোগ সনাক্তকরণ', aiPowered: 'AI-চালিত সনাক্তকরণ',
