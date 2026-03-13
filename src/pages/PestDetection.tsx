@@ -155,7 +155,9 @@ const pestTranslations: Record<string, Record<string, string>> = {
     refFungal: 'कवक और जीवाणु रोग',
     refInsects: 'कीट क्षति',
     refViral: 'वायरल रोग',
-    refDeficiency: 'पोषक तत्वों की कमी के लक्षण',
+     refDeficiency: 'पोषक तत्वों की कमी के लक्षण',
+    translateBtn: 'हिंदी में अनुवाद करें',
+    translating: 'अनुवाद हो रहा है...',
   },
   ta: {
     pageTitle: 'பூச்சி மற்றும் நோய் கண்டறிதல்',
