@@ -226,7 +226,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ఫైల్ చాలా పెద్దది', fileTooLargeDesc: '5MB కంటే తక్కువ చిత్రం అప్‌లోడ్ చేయండి', errorTitle: 'లోపం', errorDesc: 'దయచేసి పంటను ఎంచుకుని లక్షణాలను వివరించండి', analysisComplete: 'విశ్లేషణ పూర్తి', imageAnalyzed: 'AI విజన్‌తో విశ్లేషణ!', pestIdentified: 'తెగుళ్ళు/వ్యాధి గుర్తించబడింది!', failedAnalysis: 'విశ్లేషణ విఫలం',
     leaves: 'ఆకులు', stem: 'కాండం', roots: 'వేర్లు', fruits: 'పండ్లు', flowers: 'పూలు', wholePlant: 'మొత్తం మొక్క',
     historyTitle: 'విశ్లేషణ చరిత్ర', noHistory: 'ఇంకా విశ్లేషణ లేదు', viewHistory: 'చరిత్ర చూడండి', hideHistory: 'చరిత్ర దాచు',
-    refGalleryTitle: 'వ్యాధి సూచన మార్గదర్శి', refGalleryDesc: 'గుర్తింపు కోసం CNN & AI మోడల్స్', refFungal: 'శిలీంధ్ర & బాక్టీరియా వ్యాధులు', refInsects: 'కీటక నష్టం', refViral: 'వైరల్ వ్యాధులు', refDeficiency: 'పోషక లోప లక్షణాలు',
+     refGalleryTitle: 'వ్యాధి సూచన మార్గదర్శి', refGalleryDesc: 'గుర్తింపు కోసం CNN & AI మోడల్స్', refFungal: 'శిలీంధ్ర & బాక్టీరియా వ్యాధులు', refInsects: 'కీటక నష్టం', refViral: 'వైరల్ వ్యాధులు', refDeficiency: 'పోషక లోప లక్షణాలు',
+    translateBtn: 'తెలుగులో అనువదించండి', translating: 'అనువదిస్తోంది...',
   },
   kn: {
     pageTitle: 'ಕೀಟ & ರೋಗ ಪತ್ತೆ', aiPowered: 'AI-ಚಾಲಿತ ಪತ್ತೆ',
