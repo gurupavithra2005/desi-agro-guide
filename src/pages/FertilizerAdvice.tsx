@@ -177,7 +177,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'ਵਿਸ਼ਲੇਸ਼ਣ...', getAdvice: 'ਖਾਦ ਸਲਾਹ ਲਵੋ', resultsTitle: 'ਸਿਫਾਰਸ਼ੀ ਖਾਦਾਂ', method: 'ਤਰੀਕਾ', estCost: 'ਅੰਦਾਜ਼ਨ ਲਾਗਤ', scheduleTitle: 'ਵਰਤੋਂ ਸਮਾਂ-ਸੂਚੀ',
     error: 'ਗਲਤੀ', errorDesc: 'ਫ਼ਸਲ ਚੁਣੋ', success: 'ਸਫਲਤਾ', successDesc: 'ਖਾਦ ਸਿਫਾਰਸ਼ਾਂ ਤਿਆਰ!',
     basal: 'ਬੇਸਲ (ਬਿਜਾਈ ਤੋਂ ਪਹਿਲਾਂ)', vegetative: 'ਵਧ ਫੁੱਲ ਪੜਾਅ', flowering: 'ਫੁੱਲ ਪੜਾਅ', fruiting: 'ਫਲ ਪੜਾਅ',
-    irrigation: 'ਸਿੰਚਾਈ', rainfed: 'ਬਰਸਾਤੀ', irrigated: 'ਸਿੰਚਿਤ', targetYield: 'ਨਿਸ਼ਾਨਾ ਝਾੜ', moderate: 'ਦਰਮਿਆਨਾ', high: 'ਉੱਚ', das: 'DAS',
+     irrigation: 'ਸਿੰਚਾਈ', rainfed: 'ਬਰਸਾਤੀ', irrigated: 'ਸਿੰਚਿਤ', targetYield: 'ਨਿਸ਼ਾਨਾ ਝਾੜ', moderate: 'ਦਰਮਿਆਨਾ', high: 'ਉੱਚ', das: 'DAS',
+    translateBtn: 'ਪੰਜਾਬੀ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ', translating: 'ਅਨੁਵਾਦ ਹੋ ਰਿਹਾ...',
   },
   mr: {
     stcrTitle: 'STCR आधारित शिफारसी', stcrDesc: 'माती चाचणी निकालांवर आधारित वैयक्तिक खत सल्ला मिळवा.',
