@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
-import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill, BarChart3, Info, History, Clock, ChevronDown, ChevronUp, ImageIcon, Brain } from 'lucide-react';
+import { Camera, Upload, Bug, AlertTriangle, Loader2, Leaf, ShieldCheck, Pill, BarChart3, Info, History, Clock, ChevronDown, ChevronUp, ImageIcon, Brain, Languages } from 'lucide-react';
 import diseaseRefFungal from '@/assets/disease-ref-fungal.jpg';
 import diseaseRefInsects from '@/assets/disease-ref-insects.jpg';
 import diseaseRefViral from '@/assets/disease-ref-viral.jpg';
@@ -89,7 +89,7 @@ const pestTranslations: Record<string, Record<string, string>> = {
     imageAnalyzed: 'Image analyzed with AI vision!',
     pestIdentified: 'Pest/disease identified!',
     failedAnalysis: 'Failed to analyze pest/disease',
-    leaves: 'Leaves', stem: 'Stem', roots: 'Roots', fruits: 'Fruits', flowers: 'Flowers', wholePlant: 'Whole Plant',
+     leaves: 'Leaves', stem: 'Stem', roots: 'Roots', fruits: 'Fruits', flowers: 'Flowers', wholePlant: 'Whole Plant',
     historyTitle: 'Analysis History',
     noHistory: 'No past analyses yet',
     viewHistory: 'View History',
@@ -100,6 +100,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     refInsects: 'Insect Pest Damage',
     refViral: 'Viral Diseases',
     refDeficiency: 'Nutrient Deficiency Symptoms',
+    translateBtn: 'Translate Results to Tamil',
+    translating: 'Translating...',
   },
   hi: {
     pageTitle: 'कीट और रोग पहचान',
@@ -153,7 +155,9 @@ const pestTranslations: Record<string, Record<string, string>> = {
     refFungal: 'कवक और जीवाणु रोग',
     refInsects: 'कीट क्षति',
     refViral: 'वायरल रोग',
-    refDeficiency: 'पोषक तत्वों की कमी के लक्षण',
+     refDeficiency: 'पोषक तत्वों की कमी के लक्षण',
+    translateBtn: 'हिंदी में अनुवाद करें',
+    translating: 'अनुवाद हो रहा है...',
   },
   ta: {
     pageTitle: 'பூச்சி மற்றும் நோய் கண்டறிதல்',
@@ -207,7 +211,9 @@ const pestTranslations: Record<string, Record<string, string>> = {
     refFungal: 'பூஞ்சை & பாக்டீரியா நோய்கள்',
     refInsects: 'பூச்சி சேதம்',
     refViral: 'வைரஸ் நோய்கள்',
-    refDeficiency: 'ஊட்டச்சத்து குறைபாட்டு அறிகுறிகள்',
+     refDeficiency: 'ஊட்டச்சத்து குறைபாட்டு அறிகுறிகள்',
+    translateBtn: 'தமிழில் மொழிபெயர்க்கவும்',
+    translating: 'மொழிபெயர்க்கிறது...',
   },
   te: {
     pageTitle: 'తెగుళ్ళు & వ్యాధి గుర్తింపు', aiPowered: 'AI-ఆధారిత గుర్తింపు',
@@ -220,7 +226,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ఫైల్ చాలా పెద్దది', fileTooLargeDesc: '5MB కంటే తక్కువ చిత్రం అప్‌లోడ్ చేయండి', errorTitle: 'లోపం', errorDesc: 'దయచేసి పంటను ఎంచుకుని లక్షణాలను వివరించండి', analysisComplete: 'విశ్లేషణ పూర్తి', imageAnalyzed: 'AI విజన్‌తో విశ్లేషణ!', pestIdentified: 'తెగుళ్ళు/వ్యాధి గుర్తించబడింది!', failedAnalysis: 'విశ్లేషణ విఫలం',
     leaves: 'ఆకులు', stem: 'కాండం', roots: 'వేర్లు', fruits: 'పండ్లు', flowers: 'పూలు', wholePlant: 'మొత్తం మొక్క',
     historyTitle: 'విశ్లేషణ చరిత్ర', noHistory: 'ఇంకా విశ్లేషణ లేదు', viewHistory: 'చరిత్ర చూడండి', hideHistory: 'చరిత్ర దాచు',
-    refGalleryTitle: 'వ్యాధి సూచన మార్గదర్శి', refGalleryDesc: 'గుర్తింపు కోసం CNN & AI మోడల్స్', refFungal: 'శిలీంధ్ర & బాక్టీరియా వ్యాధులు', refInsects: 'కీటక నష్టం', refViral: 'వైరల్ వ్యాధులు', refDeficiency: 'పోషక లోప లక్షణాలు',
+     refGalleryTitle: 'వ్యాధి సూచన మార్గదర్శి', refGalleryDesc: 'గుర్తింపు కోసం CNN & AI మోడల్స్', refFungal: 'శిలీంధ్ర & బాక్టీరియా వ్యాధులు', refInsects: 'కీటక నష్టం', refViral: 'వైరల్ వ్యాధులు', refDeficiency: 'పోషక లోప లక్షణాలు',
+    translateBtn: 'తెలుగులో అనువదించండి', translating: 'అనువదిస్తోంది...',
   },
   kn: {
     pageTitle: 'ಕೀಟ & ರೋಗ ಪತ್ತೆ', aiPowered: 'AI-ಚಾಲಿತ ಪತ್ತೆ',
@@ -233,7 +240,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ಫೈಲ್ ತುಂಬಾ ದೊಡ್ಡದು', fileTooLargeDesc: '5MB ಒಳಗಿನ ಚಿತ್ರ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ', errorTitle: 'ದೋಷ', errorDesc: 'ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ', analysisComplete: 'ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ', imageAnalyzed: 'AI ವಿಶ್ಲೇಷಣೆ ಪೂರ್ಣ!', pestIdentified: 'ಕೀಟ/ರೋಗ ಗುರುತಿಸಲಾಗಿದೆ!', failedAnalysis: 'ವಿಶ್ಲೇಷಣೆ ವಿಫಲ',
     leaves: 'ಎಲೆಗಳು', stem: 'ಕಾಂಡ', roots: 'ಬೇರುಗಳು', fruits: 'ಹಣ್ಣುಗಳು', flowers: 'ಹೂವುಗಳು', wholePlant: 'ಇಡೀ ಸಸ್ಯ',
     historyTitle: 'ವಿಶ್ಲೇಷಣೆ ಇತಿಹಾಸ', noHistory: 'ಇನ್ನೂ ವಿಶ್ಲೇಷಣೆ ಇಲ್ಲ', viewHistory: 'ಇತಿಹಾಸ ನೋಡಿ', hideHistory: 'ಇತಿಹಾಸ ಮರೆಮಾಡಿ',
-    refGalleryTitle: 'ರೋಗ ಉಲ್ಲೇಖ ಮಾರ್ಗದರ್ಶಿ', refGalleryDesc: 'ಪತ್ತೆಗೆ CNN & AI ಮಾಡೆಲ್‌ಗಳು', refFungal: 'ಶಿಲೀಂಧ್ರ & ಬ್ಯಾಕ್ಟೀರಿಯ ರೋಗಗಳು', refInsects: 'ಕೀಟ ಹಾನಿ', refViral: 'ವೈರಲ್ ರೋಗಗಳು', refDeficiency: 'ಪೋಷಕಾಂಶ ಕೊರತೆ ಲಕ್ಷಣಗಳು',
+     refGalleryTitle: 'ರೋಗ ಉಲ್ಲೇಖ ಮಾರ್ಗದರ್ಶಿ', refGalleryDesc: 'ಪತ್ತೆಗೆ CNN & AI ಮಾಡೆಲ್‌ಗಳು', refFungal: 'ಶಿಲೀಂಧ್ರ & ಬ್ಯಾಕ್ಟೀರಿಯ ರೋಗಗಳು', refInsects: 'ಕೀಟ ಹಾನಿ', refViral: 'ವೈರಲ್ ರೋಗಗಳು', refDeficiency: 'ಪೋಷಕಾಂಶ ಕೊರತೆ ಲಕ್ಷಣಗಳು',
+    translateBtn: 'ಕನ್ನಡಕ್ಕೆ ಅನುವಾದಿಸಿ', translating: 'ಅನುವಾದಿಸಲಾಗುತ್ತಿದೆ...',
   },
   bn: {
     pageTitle: 'পোকা ও রোগ সনাক্তকরণ', aiPowered: 'AI-চালিত সনাক্তকরণ',
@@ -246,7 +254,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ফাইল খুব বড়', fileTooLargeDesc: '5MB-র কম ছবি আপলোড করুন', errorTitle: 'ত্রুটি', errorDesc: 'ফসল নির্বাচন করুন', analysisComplete: 'বিশ্লেষণ সম্পন্ন', imageAnalyzed: 'AI বিশ্লেষণ হয়েছে!', pestIdentified: 'পোকা/রোগ সনাক্ত!', failedAnalysis: 'বিশ্লেষণ ব্যর্থ',
     leaves: 'পাতা', stem: 'কান্ড', roots: 'শিকড়', fruits: 'ফল', flowers: 'ফুল', wholePlant: 'সম্পূর্ণ গাছ',
     historyTitle: 'বিশ্লেষণ ইতিহাস', noHistory: 'এখনো কোনো বিশ্লেষণ নেই', viewHistory: 'ইতিহাস দেখুন', hideHistory: 'ইতিহাস লুকান',
-    refGalleryTitle: 'রোগ রেফারেন্স গাইড', refGalleryDesc: 'সনাক্তকরণের জন্য CNN & AI মডেল', refFungal: 'ছত্রাক ও ব্যাকটেরিয়া রোগ', refInsects: 'পোকা ক্ষতি', refViral: 'ভাইরাল রোগ', refDeficiency: 'পুষ্টির ঘাটতি লক্ষণ',
+     refGalleryTitle: 'রোগ রেফারেন্স গাইড', refGalleryDesc: 'সনাক্তকরণের জন্য CNN & AI মডেল', refFungal: 'ছত্রাক ও ব্যাকটেরিয়া রোগ', refInsects: 'পোকা ক্ষতি', refViral: 'ভাইরাল রোগ', refDeficiency: 'পুষ্টির ঘাটতি লক্ষণ',
+    translateBtn: 'বাংলায় অনুবাদ করুন', translating: 'অনুবাদ হচ্ছে...',
   },
   pa: {
     pageTitle: 'ਕੀੜੇ ਅਤੇ ਬਿਮਾਰੀ ਪਛਾਣ', aiPowered: 'AI-ਸੰਚਾਲਿਤ ਪਛਾਣ',
@@ -259,7 +268,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ਫ਼ਾਈਲ ਬਹੁਤ ਵੱਡੀ', fileTooLargeDesc: '5MB ਤੋਂ ਘੱਟ', errorTitle: 'ਗਲਤੀ', errorDesc: 'ਫ਼ਸਲ ਚੁਣੋ', analysisComplete: 'ਵਿਸ਼ਲੇਸ਼ਣ ਪੂਰਾ', imageAnalyzed: 'AI ਨਾਲ ਵਿਸ਼ਲੇਸ਼ਣ ਹੋਇਆ!', pestIdentified: 'ਪਛਾਣੀ ਗਈ!', failedAnalysis: 'ਵਿਸ਼ਲੇਸ਼ਣ ਅਸਫਲ',
     leaves: 'ਪੱਤੇ', stem: 'ਤਣਾ', roots: 'ਜੜ੍ਹਾਂ', fruits: 'ਫਲ', flowers: 'ਫੁੱਲ', wholePlant: 'ਪੂਰਾ ਪੌਦਾ',
     historyTitle: 'ਵਿਸ਼ਲੇਸ਼ਣ ਇਤਿਹਾਸ', noHistory: 'ਅਜੇ ਕੋਈ ਵਿਸ਼ਲੇਸ਼ਣ ਨਹੀਂ', viewHistory: 'ਇਤਿਹਾਸ ਦੇਖੋ', hideHistory: 'ਇਤਿਹਾਸ ਲੁਕਾਓ',
-    refGalleryTitle: 'ਬਿਮਾਰੀ ਸੰਦਰਭ ਗਾਈਡ', refGalleryDesc: 'ਪਛਾਣ ਲਈ CNN & AI ਮਾਡਲ', refFungal: 'ਫੰਗਲ ਅਤੇ ਬੈਕਟੀਰੀਆ ਬਿਮਾਰੀਆਂ', refInsects: 'ਕੀੜੇ ਨੁਕਸਾਨ', refViral: 'ਵਾਇਰਲ ਬਿਮਾਰੀਆਂ', refDeficiency: 'ਪੋਸ਼ਕ ਤੱਤ ਘਾਟ ਲੱਛਣ',
+     refGalleryTitle: 'ਬਿਮਾਰੀ ਸੰਦਰਭ ਗਾਈਡ', refGalleryDesc: 'ਪਛਾਣ ਲਈ CNN & AI ਮਾਡਲ', refFungal: 'ਫੰਗਲ ਅਤੇ ਬੈਕਟੀਰੀਆ ਬਿਮਾਰੀਆਂ', refInsects: 'ਕੀੜੇ ਨੁਕਸਾਨ', refViral: 'ਵਾਇਰਲ ਬਿਮਾਰੀਆਂ', refDeficiency: 'ਪੋਸ਼ਕ ਤੱਤ ਘਾਟ ਲੱਛਣ',
+    translateBtn: 'ਪੰਜਾਬੀ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ', translating: 'ਅਨੁਵਾਦ ਹੋ ਰਿਹਾ...',
   },
   mr: {
     pageTitle: 'कीड आणि रोग ओळख', aiPowered: 'AI-चालित ओळख',
@@ -272,7 +282,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'फाइल खूप मोठी', fileTooLargeDesc: '5MB पेक्षा कमी', errorTitle: 'त्रुटी', errorDesc: 'पीक निवडा', analysisComplete: 'विश्लेषण पूर्ण', imageAnalyzed: 'AI ने विश्लेषण झाले!', pestIdentified: 'कीड/रोग ओळखला!', failedAnalysis: 'विश्लेषण अयशस्वी',
     leaves: 'पाने', stem: 'खोड', roots: 'मुळे', fruits: 'फळे', flowers: 'फुले', wholePlant: 'संपूर्ण झाड',
     historyTitle: 'विश्लेषण इतिहास', noHistory: 'अजून कोणतेही विश्लेषण नाही', viewHistory: 'इतिहास पहा', hideHistory: 'इतिहास लपवा',
-    refGalleryTitle: 'रोग संदर्भ मार्गदर्शक', refGalleryDesc: 'ओळखीसाठी CNN & AI मॉडेल', refFungal: 'बुरशी व जीवाणू रोग', refInsects: 'कीड नुकसान', refViral: 'विषाणू रोग', refDeficiency: 'पोषक तत्वांच्या कमतरतेची लक्षणे',
+     refGalleryTitle: 'रोग संदर्भ मार्गदर्शक', refGalleryDesc: 'ओळखीसाठी CNN & AI मॉडेल', refFungal: 'बुरशी व जीवाणू रोग', refInsects: 'कीड नुकसान', refViral: 'विषाणू रोग', refDeficiency: 'पोषक तत्वांच्या कमतरतेची लक्षणे',
+    translateBtn: 'मराठीत अनुवाद करा', translating: 'अनुवाद होत आहे...',
   },
 };
 
@@ -289,6 +300,7 @@ export default function PestDetection() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const pt = useMemo(() => pestTranslations[language] || pestTranslations.en, [language]);
 
@@ -333,6 +345,34 @@ export default function PestDetection() {
     { value: 'turmeric', label: 'Turmeric 🟡' },
     { value: 'drumstick', label: 'Drumstick (Moringa) 🌿' },
     { value: 'curry_leaves', label: 'Curry Leaves 🌿' },
+    { value: 'carrot', label: 'Carrot 🥕' },
+    { value: 'sweet_potato', label: 'Sweet Potato 🍠' },
+    { value: 'radish', label: 'Radish 🌿' },
+    { value: 'beetroot', label: 'Beetroot 🟣' },
+    { value: 'spinach', label: 'Spinach 🥬' },
+    { value: 'lettuce', label: 'Lettuce 🥬' },
+    { value: 'grapes', label: 'Grapes 🍇' },
+    { value: 'papaya', label: 'Papaya 🍈' },
+    { value: 'citrus', label: 'Citrus (Lemon/Orange) 🍊' },
+    { value: 'strawberry', label: 'Strawberry 🍓' },
+    { value: 'ginger', label: 'Ginger 🫚' },
+    { value: 'garlic', label: 'Garlic 🧄' },
+    { value: 'peas', label: 'Peas 🟢' },
+    { value: 'black_gram', label: 'Black Gram 🫘' },
+    { value: 'green_gram', label: 'Green Gram 🫘' },
+    { value: 'chickpea', label: 'Chickpea 🫘' },
+    { value: 'mustard', label: 'Mustard 🌼' },
+    { value: 'sunflower', label: 'Sunflower 🌻' },
+    { value: 'sesame', label: 'Sesame 🌾' },
+    { value: 'tea', label: 'Tea 🍵' },
+    { value: 'coffee', label: 'Coffee ☕' },
+    { value: 'pepper', label: 'Black Pepper 🌿' },
+    { value: 'cardamom', label: 'Cardamom 🌿' },
+    { value: 'coriander', label: 'Coriander 🌿' },
+    { value: 'mint', label: 'Mint 🌿' },
+    { value: 'jasmine', label: 'Jasmine 🌸' },
+    { value: 'rose', label: 'Rose 🌹' },
+    { value: 'marigold', label: 'Marigold 🌼' },
   ];
 
   const affectedParts = [
@@ -385,6 +425,46 @@ export default function PestDetection() {
       fetchHistory();
     } catch (e) {
       console.error('Failed to save history:', e);
+    }
+  };
+
+  const handleTranslateResult = async () => {
+    if (!result) return;
+    setIsTranslating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('crop-advisor', {
+        body: {
+          type: 'pest_detection',
+          data: {
+            crop: formData.crop,
+            symptoms: `Translate the following pest detection result into the user's language. Keep the same structure. Original result: Disease: ${result.pest}, Description: ${result.description}, Treatment: ${(result.treatment || []).join('; ')}, Organic: ${(result.organic_alternatives || []).join('; ')}, Prevention: ${(result.prevention || []).join('; ')}`,
+            affectedPart: formData.affectedPart,
+            spread: formData.spread,
+            duration: formData.duration,
+          },
+          language,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.success && data?.data) {
+        setResult({
+          pest: data.data.pest || result.pest,
+          confidence: data.data.confidence || result.confidence,
+          severity: data.data.severity || result.severity,
+          description: data.data.description || result.description,
+          treatment: data.data.treatment || data.data.chemical_control || result.treatment,
+          organic_alternatives: data.data.organic_alternatives || data.data.biological_control || result.organic_alternatives,
+          prevention: data.data.prevention || data.data.preventive_measures || result.prevention,
+        });
+        toast({ title: pt.analysisComplete, description: pt.translateBtn });
+      }
+    } catch (error: any) {
+      console.error('Translation error:', error);
+      toast({ variant: 'destructive', title: pt.errorTitle, description: error.message });
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -772,6 +852,24 @@ export default function PestDetection() {
                   </ul>
                 </CardContent>
               </Card>
+            </PageSection>
+           )}
+
+          {/* Translate Button */}
+          {language !== 'en' && (
+            <PageSection>
+              <Button
+                onClick={handleTranslateResult}
+                disabled={isTranslating}
+                variant="outline"
+                className="w-full h-12 gap-2 border-primary text-primary hover:bg-primary/10"
+              >
+                {isTranslating ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" />{pt.translating}</>
+                ) : (
+                  <><Languages className="w-5 h-5" />{pt.translateBtn}</>
+                )}
+              </Button>
             </PageSection>
           )}
         </>

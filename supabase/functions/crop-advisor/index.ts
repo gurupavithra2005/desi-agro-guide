@@ -207,12 +207,18 @@ ${ICAR_KNOWLEDGE}
 Provide precise fertilizer recommendations with split application schedules.
 For each fertilizer: type, quantity_kg_per_ha, application_method, timing_days_after_sowing, cost_estimate.
 
-## CRITICAL LANGUAGE INSTRUCTION:
-You MUST respond ENTIRELY in ${langName} language. Every single word of your response - fertilizer names (translated), quantities, methods, schedule descriptions, tips - ALL must be in ${langName}.
-DO NOT mix English in your response. If the language is Tamil, write everything in Tamil script. If Hindi, write everything in Devanagari. And so on for all languages.
-The only exceptions are: chemical formulas (NPK, DAP, MOP), units (kg/ha, g/L), and numbers.
+## ★★★ CRITICAL LANGUAGE RULE ★★★
+Your ENTIRE response MUST be written COMPLETELY in ${langName} language using its native script.
+- If ${langName} is Tamil → Write EVERYTHING in Tamil script (தமிழ்). Fertilizer names like "Urea" = "யூரியா", "DAP" can stay, "Basal Application" = "அடிப்படை உரமிடுதல்"
+- If ${langName} is Hindi → Write EVERYTHING in Devanagari. "Urea" = "यूरिया", "Broadcasting" = "छिड़काव"
+- ALL fertilizer names MUST be transliterated into ${langName} script.
+- ALL method descriptions MUST be in ${langName}.
+- ALL timing descriptions MUST be in ${langName}.
+- ALL schedule stage names and descriptions MUST be in ${langName}.
+- The ONLY things allowed in English/Latin script are: chemical formulas (NPK, DAP, MOP, ZnSO4), units (kg/ha, g/L), and numbers.
+- ABSOLUTELY NO English sentences, phrases, or words anywhere else in the response.
 
-Format as JSON with "fertilizers" array and "schedule" array.`;
+Format as JSON with "fertilizers" array and "schedule" array. ALL text values in the JSON must be in ${langName}.`;
 
         userPrompt = `Fertilizer plan for:
 Crop: ${data.crop || 'Not specified'}
@@ -223,7 +229,7 @@ Organic Carbon: ${data.organicCarbon || 'N/A'}%
 Target Yield: ${data.targetYield || 'Moderate'}
 Irrigation: ${data.irrigation || 'Rainfed'}
 
-IMPORTANT: Your ENTIRE response must be in ${langName}. All field names, descriptions, methods, timing labels - EVERYTHING in ${langName}.`;
+★★★ MANDATORY: Your ENTIRE response - every fertilizer name, method, timing, stage, description - ALL must be in ${langName} script. NO English words allowed except chemical formulas and units.`;
         messages = [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }];
         break;
 
@@ -278,8 +284,17 @@ ${ICAR_KNOWLEDGE}
 5. If CNN classification results are provided, use the TOP CNN prediction as your primary diagnosis unless your visual analysis strongly contradicts it.
 6. Give confidence between 0.5-0.95. Use 0.5-0.6 for uncertain diagnoses, 0.7-0.8 for probable, 0.85+ for confident.
 7. Always provide SPECIFIC chemical names with exact dosages from ICAR recommendations.
-8. Respond ONLY in ${langName} language. Every word of your diagnosis, description, treatment names, organic methods, and prevention tips MUST be in ${langName}. DO NOT use English for any text descriptions. Only chemical formulas, scientific names in parentheses, and units are allowed in English.
-9. If ${langName} is Tamil, write everything in Tamil script (தமிழ்). If Hindi, in Devanagari. And so on.
+
+## ★★★ CRITICAL LANGUAGE RULE ★★★
+Your ENTIRE response MUST be written COMPLETELY in ${langName} language using its native script.
+- If ${langName} is Tamil → Write EVERYTHING in Tamil script (தமிழ்). Example: "Cercospora Leaf Spot" should be written as "செர்கோஸ்போரா இலைப்புள்ளி நோய்"
+- If ${langName} is Hindi → Write EVERYTHING in Devanagari script (हिन्दी). Example: "Early Blight" = "अगेती झुलसा रोग"
+- Disease names MUST be translated/transliterated into ${langName} script. Do NOT leave them in English.
+- Treatment descriptions MUST be in ${langName}. Do NOT write English sentences.
+- Organic alternatives MUST be in ${langName}.
+- Prevention tips MUST be in ${langName}.
+- The ONLY things allowed in English/Latin script are: chemical formulas (NPK, ZnSO4), scientific names in parentheses like (Alternaria solani), units (kg/ha, g/L, ml/L), and numbers.
+- ABSOLUTELY NO English sentences, phrases, or words anywhere else.
 
 ## DIAGNOSIS DECISION TREE:
 - Spots/lesions on leaves → Check pattern: concentric rings = Early Blight, diamond = Blast, circular brown = Cercospora, orange pustules = Rust
@@ -289,15 +304,15 @@ ${ICAR_KNOWLEDGE}
 - Holes/damage → Regular holes = Insect damage (identify specific pest), irregular = Caterpillar damage
 - Curling → Upward with stunting = Leaf Curl Virus, downward = moisture stress
 
-Return a JSON object with these exact fields:
+Return a JSON object with these exact fields (ALL field values MUST be in ${langName} language):
 {
-  "pest": "Specific Disease/Pest Name (NEVER 'Unknown')",
+  "pest": "நோய் பெயர் ${langName} மொழியில் (NEVER English, NEVER 'Unknown')",
   "confidence": 0.75,
   "severity": "low|medium|high|critical",
-  "description": "Detailed description of the disease, its cause, and how it affects the crop",
-  "treatment": ["Specific chemical 1 with exact dosage", "Specific chemical 2 with exact dosage"],
-  "organic_alternatives": ["Organic method 1 with application details", "Organic method 2"],
-  "prevention": ["Prevention tip 1", "Prevention tip 2", "Prevention tip 3"]
+  "description": "முழு விளக்கம் ${langName} மொழியில் மட்டுமே",
+  "treatment": ["சிகிச்சை 1 ${langName} மொழியில்", "சிகிச்சை 2 ${langName} மொழியில்"],
+  "organic_alternatives": ["இயற்கை முறை 1 ${langName} மொழியில்", "இயற்கை முறை 2"],
+  "prevention": ["தடுப்பு 1 ${langName} மொழியில்", "தடுப்பு 2", "தடுப்பு 3"]
 }`;
 
         userPrompt = `Identify the disease/pest affecting this crop:
@@ -307,7 +322,11 @@ Affected Part: ${data.affectedPart || 'Leaves'}
 Spread Pattern: ${data.spread || 'Not specified'}
 Duration: ${data.duration || 'Not specified'}${hfClassification}
 
-CRITICAL REMINDER: You MUST provide a specific disease/pest name. "Unknown" is NOT acceptable. Use the diagnosis decision tree and CNN results to determine the most likely disease. If truly no disease is present, say "Healthy Plant - No Disease Detected". YOUR ENTIRE RESPONSE MUST BE IN ${langName} - all descriptions, treatment names, prevention tips, everything in ${langName} script.`;
+★★★ MANDATORY ★★★
+1. You MUST provide a specific disease/pest name - "Unknown" is FORBIDDEN.
+2. YOUR ENTIRE JSON RESPONSE - every single field value including "pest", "description", "treatment", "organic_alternatives", "prevention" - MUST be written COMPLETELY in ${langName} using ${langName} script.
+3. DO NOT write any English words in the values. Translate disease names: e.g., "Cercospora Leaf Spot" → Tamil: "செர்கோஸ்போரா இலைப்புள்ளி நோய்", Hindi: "सर्कोस्पोरा पत्ती धब्बा रोग".
+4. Only chemical formulas, scientific names in parentheses, and units (kg/ha) may remain in English.`;
 
         if (data.imageBase64) {
           messages = [

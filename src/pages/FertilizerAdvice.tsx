@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Droplets, Leaf, FlaskConical, Calendar, Calculator, Loader2, ChevronRight, AlertCircle } from 'lucide-react';
+import { Droplets, Leaf, FlaskConical, Calendar, Calculator, Loader2, ChevronRight, AlertCircle, Languages } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { PageContainer, PageSection } from '@/components/layout/PageContainer';
@@ -59,6 +59,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     moderate: 'Moderate',
     high: 'High',
     das: 'DAS',
+    translateBtn: 'Translate Results',
+    translating: 'Translating...',
   },
   hi: {
     stcrTitle: 'STCR-आधारित सिफारिशें',
@@ -95,7 +97,7 @@ const fertTranslations: Record<string, Record<string, string>> = {
     targetYield: 'लक्ष्य उपज',
     moderate: 'मध्यम',
     high: 'उच्च',
-    das: 'DAS',
+    das: 'DAS', translateBtn: 'हिंदी में अनुवाद करें', translating: 'अनुवाद हो रहा है...',
   },
   ta: {
     stcrTitle: 'STCR அடிப்படையிலான பரிந்துரைகள்',
@@ -132,7 +134,7 @@ const fertTranslations: Record<string, Record<string, string>> = {
     targetYield: 'இலக்கு மகசூல்',
     moderate: 'நடுத்தர',
     high: 'அதிக',
-    das: 'DAS',
+    das: 'DAS', translateBtn: 'தமிழில் மொழிபெயர்க்கவும்', translating: 'மொழிபெயர்க்கிறது...',
   },
   te: {
     stcrTitle: 'STCR ఆధారిత సిఫార్సులు', stcrDesc: 'మట్టి పరీక్ష ఫలితాల ఆధారంగా వ్యక్తిగత ఎరువుల సలహా పొందండి.',
@@ -142,7 +144,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'విశ్లేషిస్తోంది...', getAdvice: 'ఎరువుల సలహా పొందండి', resultsTitle: 'సిఫార్సు చేసిన ఎరువులు', method: 'పద్ధతి', estCost: 'అంచనా ఖర్చు', scheduleTitle: 'వాడకం షెడ్యూల్',
     error: 'లోపం', errorDesc: 'పంటను ఎంచుకోండి', success: 'విజయం', successDesc: 'ఎరువుల సిఫార్సులు సిద్ధం!',
     basal: 'బేసల్ (విత్తనానికి ముందు)', vegetative: 'వృక్ష దశ', flowering: 'పుష్పించే దశ', fruiting: 'ఫలాల దశ',
-    irrigation: 'నీటి పారుదల', rainfed: 'వర్షాధారం', irrigated: 'నీటి పారుదల', targetYield: 'లక్ష్య దిగుబడి', moderate: 'మధ్యస్తం', high: 'అధికం', das: 'DAS',
+     irrigation: 'నీటి పారుదల', rainfed: 'వర్షాధారం', irrigated: 'నీటి పారుదల', targetYield: 'లక్ష్య దిగుబడి', moderate: 'మధ్యస్తం', high: 'అధికం', das: 'DAS',
+    translateBtn: 'తెలుగులో అనువదించండి', translating: 'అనువదిస్తోంది...',
   },
   kn: {
     stcrTitle: 'STCR ಆಧಾರಿತ ಶಿಫಾರಸುಗಳು', stcrDesc: 'ಮಣ್ಣಿನ ಪರೀಕ್ಷೆ ಫಲಿತಾಂಶಗಳ ಆಧಾರದ ಮೇಲೆ ವೈಯಕ್ತಿಕ ಗೊಬ್ಬರ ಸಲಹೆ ಪಡೆಯಿರಿ.',
@@ -152,7 +155,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'ವಿಶ್ಲೇಷಣೆ...', getAdvice: 'ಗೊಬ್ಬರ ಸಲಹೆ ಪಡೆಯಿರಿ', resultsTitle: 'ಶಿಫಾರಸು ಮಾಡಿದ ಗೊಬ್ಬರಗಳು', method: 'ವಿಧಾನ', estCost: 'ಅಂದಾಜು ವೆಚ್ಚ', scheduleTitle: 'ಬಳಕೆ ವೇಳಾಪಟ್ಟಿ',
     error: 'ದೋಷ', errorDesc: 'ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ', success: 'ಯಶಸ್ಸು', successDesc: 'ಗೊಬ್ಬರ ಶಿಫಾರಸು ಸಿದ್ಧ!',
     basal: 'ಬೇಸಲ್ (ಬಿತ್ತನೆಗೆ ಮುನ್ನ)', vegetative: 'ಸಸ್ಯ ಹಂತ', flowering: 'ಹೂಬಿಡುವ ಹಂತ', fruiting: 'ಹಣ್ಣಾಗುವ ಹಂತ',
-    irrigation: 'ನೀರಾವರಿ', rainfed: 'ಮಳೆ ಆಧಾರಿತ', irrigated: 'ನೀರಾವರಿ', targetYield: 'ಗುರಿ ಇಳುವರಿ', moderate: 'ಮಧ್ಯಮ', high: 'ಹೆಚ್ಚು', das: 'DAS',
+     irrigation: 'ನೀರಾವರಿ', rainfed: 'ಮಳೆ ಆಧಾರಿತ', irrigated: 'ನೀರಾವರಿ', targetYield: 'ಗುರಿ ಇಳುವರಿ', moderate: 'ಮಧ್ಯಮ', high: 'ಹೆಚ್ಚು', das: 'DAS',
+    translateBtn: 'ಕನ್ನಡಕ್ಕೆ ಅನುವಾದಿಸಿ', translating: 'ಅನುವಾದಿಸಲಾಗುತ್ತಿದೆ...',
   },
   bn: {
     stcrTitle: 'STCR ভিত্তিক সুপারিশ', stcrDesc: 'মাটি পরীক্ষার ফলাফলের ভিত্তিতে ব্যক্তিগত সার পরামর্শ পান।',
@@ -162,7 +166,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'বিশ্লেষণ...', getAdvice: 'সার পরামর্শ পান', resultsTitle: 'প্রস্তাবিত সার', method: 'পদ্ধতি', estCost: 'আনুমানিক খরচ', scheduleTitle: 'প্রয়োগ সূচি',
     error: 'ত্রুটি', errorDesc: 'ফসল নির্বাচন করুন', success: 'সফল', successDesc: 'সার সুপারিশ তৈরি!',
     basal: 'বেসাল (বপনের আগে)', vegetative: 'উদ্ভিদ পর্যায়', flowering: 'ফুলের পর্যায়', fruiting: 'ফলের পর্যায়',
-    irrigation: 'সেচ', rainfed: 'বৃষ্টিনির্ভর', irrigated: 'সেচযুক্ত', targetYield: 'লক্ষ্য ফলন', moderate: 'মাঝারি', high: 'বেশি', das: 'DAS',
+     irrigation: 'সেচ', rainfed: 'বৃষ্টিনির্ভর', irrigated: 'সেচযুক্ত', targetYield: 'লক্ষ্য ফলন', moderate: 'মাঝারি', high: 'বেশি', das: 'DAS',
+    translateBtn: 'বাংলায় অনুবাদ করুন', translating: 'অনুবাদ হচ্ছে...',
   },
   pa: {
     stcrTitle: 'STCR ਅਧਾਰਿਤ ਸਿਫਾਰਸ਼ਾਂ', stcrDesc: 'ਮਿੱਟੀ ਟੈਸਟ ਨਤੀਜਿਆਂ ਦੇ ਆਧਾਰ \'ਤੇ ਖਾਦ ਸਲਾਹ ਪ੍ਰਾਪਤ ਕਰੋ।',
@@ -172,7 +177,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'ਵਿਸ਼ਲੇਸ਼ਣ...', getAdvice: 'ਖਾਦ ਸਲਾਹ ਲਵੋ', resultsTitle: 'ਸਿਫਾਰਸ਼ੀ ਖਾਦਾਂ', method: 'ਤਰੀਕਾ', estCost: 'ਅੰਦਾਜ਼ਨ ਲਾਗਤ', scheduleTitle: 'ਵਰਤੋਂ ਸਮਾਂ-ਸੂਚੀ',
     error: 'ਗਲਤੀ', errorDesc: 'ਫ਼ਸਲ ਚੁਣੋ', success: 'ਸਫਲਤਾ', successDesc: 'ਖਾਦ ਸਿਫਾਰਸ਼ਾਂ ਤਿਆਰ!',
     basal: 'ਬੇਸਲ (ਬਿਜਾਈ ਤੋਂ ਪਹਿਲਾਂ)', vegetative: 'ਵਧ ਫੁੱਲ ਪੜਾਅ', flowering: 'ਫੁੱਲ ਪੜਾਅ', fruiting: 'ਫਲ ਪੜਾਅ',
-    irrigation: 'ਸਿੰਚਾਈ', rainfed: 'ਬਰਸਾਤੀ', irrigated: 'ਸਿੰਚਿਤ', targetYield: 'ਨਿਸ਼ਾਨਾ ਝਾੜ', moderate: 'ਦਰਮਿਆਨਾ', high: 'ਉੱਚ', das: 'DAS',
+     irrigation: 'ਸਿੰਚਾਈ', rainfed: 'ਬਰਸਾਤੀ', irrigated: 'ਸਿੰਚਿਤ', targetYield: 'ਨਿਸ਼ਾਨਾ ਝਾੜ', moderate: 'ਦਰਮਿਆਨਾ', high: 'ਉੱਚ', das: 'DAS',
+    translateBtn: 'ਪੰਜਾਬੀ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ', translating: 'ਅਨੁਵਾਦ ਹੋ ਰਿਹਾ...',
   },
   mr: {
     stcrTitle: 'STCR आधारित शिफारसी', stcrDesc: 'माती चाचणी निकालांवर आधारित वैयक्तिक खत सल्ला मिळवा.',
@@ -182,7 +188,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'विश्लेषण...', getAdvice: 'खत सल्ला मिळवा', resultsTitle: 'शिफारस केलेली खते', method: 'पद्धत', estCost: 'अंदाजित खर्च', scheduleTitle: 'वापर वेळापत्रक',
     error: 'त्रुटी', errorDesc: 'पीक निवडा', success: 'यशस्वी', successDesc: 'खत शिफारसी तयार!',
     basal: 'बेसल (पेरणीपूर्वी)', vegetative: 'वनस्पती अवस्था', flowering: 'फुलोरा अवस्था', fruiting: 'फळ अवस्था',
-    irrigation: 'सिंचन', rainfed: 'कोरडवाहू', irrigated: 'सिंचित', targetYield: 'उद्दिष्ट उत्पादन', moderate: 'मध्यम', high: 'जास्त', das: 'DAS',
+     irrigation: 'सिंचन', rainfed: 'कोरडवाहू', irrigated: 'सिंचित', targetYield: 'उद्दिष्ट उत्पादन', moderate: 'मध्यम', high: 'जास्त', das: 'DAS',
+    translateBtn: 'मराठीत अनुवाद करा', translating: 'अनुवाद होत आहे...',
   },
 };
 
@@ -190,6 +197,7 @@ export default function FertilizerAdvice() {
   const { t, language } = useLanguage();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [recommendations, setRecommendations] = useState<FertilizerRecommendation[]>([]);
   const [schedule, setSchedule] = useState<any[]>([]);
 
@@ -303,6 +311,39 @@ export default function FertilizerAdvice() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleTranslateResult = async () => {
+    if (recommendations.length === 0) return;
+    setIsTranslating(true);
+    try {
+      const resultSummary = recommendations.map(r => `${r.name}: ${r.quantity}, ${r.timing}, ${r.method}`).join('; ');
+      const scheduleSummary = schedule.map(s => `${s.stage || s.timing}: ${s.description || s.fertilizer}`).join('; ');
+      
+      const { data, error } = await supabase.functions.invoke('crop-advisor', {
+        body: {
+          type: 'fertilizer_advice',
+          data: {
+            ...formData,
+            crop: `${formData.crop}. TRANSLATE the following existing results into the user's language: Fertilizers: ${resultSummary}. Schedule: ${scheduleSummary}`,
+          },
+          language,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.success && data?.data) {
+        if (data.data.fertilizers?.length > 0) setRecommendations(data.data.fertilizers);
+        if (data.data.schedule?.length > 0) setSchedule(data.data.schedule);
+        toast({ title: ft.success, description: ft.translateBtn });
+      }
+    } catch (error: any) {
+      console.error('Translation error:', error);
+      toast({ variant: 'destructive', title: ft.error, description: error.message });
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -519,6 +560,24 @@ export default function FertilizerAdvice() {
               </div>
             </CardContent>
           </Card>
+        </PageSection>
+      )}
+
+      {/* Translate Button */}
+      {(recommendations.length > 0 || schedule.length > 0) && language !== 'en' && (
+        <PageSection>
+          <Button
+            onClick={handleTranslateResult}
+            disabled={isTranslating}
+            variant="outline"
+            className="w-full h-12 gap-2 border-primary text-primary hover:bg-primary/10"
+          >
+            {isTranslating ? (
+              <><Loader2 className="w-4 h-4 animate-spin" />{ft.translating}</>
+            ) : (
+              <><Languages className="w-5 h-5" />{ft.translateBtn}</>
+            )}
+          </Button>
         </PageSection>
       )}
 
