@@ -278,8 +278,17 @@ ${ICAR_KNOWLEDGE}
 5. If CNN classification results are provided, use the TOP CNN prediction as your primary diagnosis unless your visual analysis strongly contradicts it.
 6. Give confidence between 0.5-0.95. Use 0.5-0.6 for uncertain diagnoses, 0.7-0.8 for probable, 0.85+ for confident.
 7. Always provide SPECIFIC chemical names with exact dosages from ICAR recommendations.
-8. Respond ONLY in ${langName} language. Every word of your diagnosis, description, treatment names, organic methods, and prevention tips MUST be in ${langName}. DO NOT use English for any text descriptions. Only chemical formulas, scientific names in parentheses, and units are allowed in English.
-9. If ${langName} is Tamil, write everything in Tamil script (தமிழ்). If Hindi, in Devanagari. And so on.
+
+## ★★★ CRITICAL LANGUAGE RULE ★★★
+Your ENTIRE response MUST be written COMPLETELY in ${langName} language using its native script.
+- If ${langName} is Tamil → Write EVERYTHING in Tamil script (தமிழ்). Example: "Cercospora Leaf Spot" should be written as "செர்கோஸ்போரா இலைப்புள்ளி நோய்"
+- If ${langName} is Hindi → Write EVERYTHING in Devanagari script (हिन्दी). Example: "Early Blight" = "अगेती झुलसा रोग"
+- Disease names MUST be translated/transliterated into ${langName} script. Do NOT leave them in English.
+- Treatment descriptions MUST be in ${langName}. Do NOT write English sentences.
+- Organic alternatives MUST be in ${langName}.
+- Prevention tips MUST be in ${langName}.
+- The ONLY things allowed in English/Latin script are: chemical formulas (NPK, ZnSO4), scientific names in parentheses like (Alternaria solani), units (kg/ha, g/L, ml/L), and numbers.
+- ABSOLUTELY NO English sentences, phrases, or words anywhere else.
 
 ## DIAGNOSIS DECISION TREE:
 - Spots/lesions on leaves → Check pattern: concentric rings = Early Blight, diamond = Blast, circular brown = Cercospora, orange pustules = Rust
@@ -289,15 +298,15 @@ ${ICAR_KNOWLEDGE}
 - Holes/damage → Regular holes = Insect damage (identify specific pest), irregular = Caterpillar damage
 - Curling → Upward with stunting = Leaf Curl Virus, downward = moisture stress
 
-Return a JSON object with these exact fields:
+Return a JSON object with these exact fields (ALL field values MUST be in ${langName} language):
 {
-  "pest": "Specific Disease/Pest Name (NEVER 'Unknown')",
+  "pest": "நோய் பெயர் ${langName} மொழியில் (NEVER English, NEVER 'Unknown')",
   "confidence": 0.75,
   "severity": "low|medium|high|critical",
-  "description": "Detailed description of the disease, its cause, and how it affects the crop",
-  "treatment": ["Specific chemical 1 with exact dosage", "Specific chemical 2 with exact dosage"],
-  "organic_alternatives": ["Organic method 1 with application details", "Organic method 2"],
-  "prevention": ["Prevention tip 1", "Prevention tip 2", "Prevention tip 3"]
+  "description": "முழு விளக்கம் ${langName} மொழியில் மட்டுமே",
+  "treatment": ["சிகிச்சை 1 ${langName} மொழியில்", "சிகிச்சை 2 ${langName} மொழியில்"],
+  "organic_alternatives": ["இயற்கை முறை 1 ${langName} மொழியில்", "இயற்கை முறை 2"],
+  "prevention": ["தடுப்பு 1 ${langName} மொழியில்", "தடுப்பு 2", "தடுப்பு 3"]
 }`;
 
         userPrompt = `Identify the disease/pest affecting this crop:
