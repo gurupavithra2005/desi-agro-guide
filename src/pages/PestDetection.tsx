@@ -428,6 +428,46 @@ export default function PestDetection() {
     }
   };
 
+  const handleTranslateResult = async () => {
+    if (!result) return;
+    setIsTranslating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('crop-advisor', {
+        body: {
+          type: 'pest_detection',
+          data: {
+            crop: formData.crop,
+            symptoms: `Translate the following pest detection result into the user's language. Keep the same structure. Original result: Disease: ${result.pest}, Description: ${result.description}, Treatment: ${(result.treatment || []).join('; ')}, Organic: ${(result.organic_alternatives || []).join('; ')}, Prevention: ${(result.prevention || []).join('; ')}`,
+            affectedPart: formData.affectedPart,
+            spread: formData.spread,
+            duration: formData.duration,
+          },
+          language,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.success && data?.data) {
+        setResult({
+          pest: data.data.pest || result.pest,
+          confidence: data.data.confidence || result.confidence,
+          severity: data.data.severity || result.severity,
+          description: data.data.description || result.description,
+          treatment: data.data.treatment || data.data.chemical_control || result.treatment,
+          organic_alternatives: data.data.organic_alternatives || data.data.biological_control || result.organic_alternatives,
+          prevention: data.data.prevention || data.data.preventive_measures || result.prevention,
+        });
+        toast({ title: pt.analysisComplete, description: pt.translateBtn });
+      }
+    } catch (error: any) {
+      console.error('Translation error:', error);
+      toast({ variant: 'destructive', title: pt.errorTitle, description: error.message });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
