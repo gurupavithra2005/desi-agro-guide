@@ -853,6 +853,24 @@ export default function PestDetection() {
                 </CardContent>
               </Card>
             </PageSection>
+           )}
+
+          {/* Translate Button */}
+          {language !== 'en' && (
+            <PageSection>
+              <Button
+                onClick={handleTranslateResult}
+                disabled={isTranslating}
+                variant="outline"
+                className="w-full h-12 gap-2 border-primary text-primary hover:bg-primary/10"
+              >
+                {isTranslating ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" />{pt.translating}</>
+                ) : (
+                  <><Languages className="w-5 h-5" />{pt.translateBtn}</>
+                )}
+              </Button>
+            </PageSection>
           )}
         </>
       )}
