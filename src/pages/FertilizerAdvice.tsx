@@ -188,7 +188,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'विश्लेषण...', getAdvice: 'खत सल्ला मिळवा', resultsTitle: 'शिफारस केलेली खते', method: 'पद्धत', estCost: 'अंदाजित खर्च', scheduleTitle: 'वापर वेळापत्रक',
     error: 'त्रुटी', errorDesc: 'पीक निवडा', success: 'यशस्वी', successDesc: 'खत शिफारसी तयार!',
     basal: 'बेसल (पेरणीपूर्वी)', vegetative: 'वनस्पती अवस्था', flowering: 'फुलोरा अवस्था', fruiting: 'फळ अवस्था',
-    irrigation: 'सिंचन', rainfed: 'कोरडवाहू', irrigated: 'सिंचित', targetYield: 'उद्दिष्ट उत्पादन', moderate: 'मध्यम', high: 'जास्त', das: 'DAS',
+     irrigation: 'सिंचन', rainfed: 'कोरडवाहू', irrigated: 'सिंचित', targetYield: 'उद्दिष्ट उत्पादन', moderate: 'मध्यम', high: 'जास्त', das: 'DAS',
+    translateBtn: 'मराठीत अनुवाद करा', translating: 'अनुवाद होत आहे...',
   },
 };
 
