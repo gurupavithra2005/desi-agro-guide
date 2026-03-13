@@ -211,7 +211,9 @@ const pestTranslations: Record<string, Record<string, string>> = {
     refFungal: 'பூஞ்சை & பாக்டீரியா நோய்கள்',
     refInsects: 'பூச்சி சேதம்',
     refViral: 'வைரஸ் நோய்கள்',
-    refDeficiency: 'ஊட்டச்சத்து குறைபாட்டு அறிகுறிகள்',
+     refDeficiency: 'ஊட்டச்சத்து குறைபாட்டு அறிகுறிகள்',
+    translateBtn: 'தமிழில் மொழிபெயர்க்கவும்',
+    translating: 'மொழிபெயர்க்கிறது...',
   },
   te: {
     pageTitle: 'తెగుళ్ళు & వ్యాధి గుర్తింపు', aiPowered: 'AI-ఆధారిత గుర్తింపు',
