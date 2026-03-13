@@ -166,7 +166,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'বিশ্লেষণ...', getAdvice: 'সার পরামর্শ পান', resultsTitle: 'প্রস্তাবিত সার', method: 'পদ্ধতি', estCost: 'আনুমানিক খরচ', scheduleTitle: 'প্রয়োগ সূচি',
     error: 'ত্রুটি', errorDesc: 'ফসল নির্বাচন করুন', success: 'সফল', successDesc: 'সার সুপারিশ তৈরি!',
     basal: 'বেসাল (বপনের আগে)', vegetative: 'উদ্ভিদ পর্যায়', flowering: 'ফুলের পর্যায়', fruiting: 'ফলের পর্যায়',
-    irrigation: 'সেচ', rainfed: 'বৃষ্টিনির্ভর', irrigated: 'সেচযুক্ত', targetYield: 'লক্ষ্য ফলন', moderate: 'মাঝারি', high: 'বেশি', das: 'DAS',
+     irrigation: 'সেচ', rainfed: 'বৃষ্টিনির্ভর', irrigated: 'সেচযুক্ত', targetYield: 'লক্ষ্য ফলন', moderate: 'মাঝারি', high: 'বেশি', das: 'DAS',
+    translateBtn: 'বাংলায় অনুবাদ করুন', translating: 'অনুবাদ হচ্ছে...',
   },
   pa: {
     stcrTitle: 'STCR ਅਧਾਰਿਤ ਸਿਫਾਰਸ਼ਾਂ', stcrDesc: 'ਮਿੱਟੀ ਟੈਸਟ ਨਤੀਜਿਆਂ ਦੇ ਆਧਾਰ \'ਤੇ ਖਾਦ ਸਲਾਹ ਪ੍ਰਾਪਤ ਕਰੋ।',
