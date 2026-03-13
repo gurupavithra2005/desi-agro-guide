@@ -300,6 +300,7 @@ export default function PestDetection() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   const pt = useMemo(() => pestTranslations[language] || pestTranslations.en, [language]);
 
