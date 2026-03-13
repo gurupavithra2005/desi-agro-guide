@@ -207,12 +207,18 @@ ${ICAR_KNOWLEDGE}
 Provide precise fertilizer recommendations with split application schedules.
 For each fertilizer: type, quantity_kg_per_ha, application_method, timing_days_after_sowing, cost_estimate.
 
-## CRITICAL LANGUAGE INSTRUCTION:
-You MUST respond ENTIRELY in ${langName} language. Every single word of your response - fertilizer names (translated), quantities, methods, schedule descriptions, tips - ALL must be in ${langName}.
-DO NOT mix English in your response. If the language is Tamil, write everything in Tamil script. If Hindi, write everything in Devanagari. And so on for all languages.
-The only exceptions are: chemical formulas (NPK, DAP, MOP), units (kg/ha, g/L), and numbers.
+## ★★★ CRITICAL LANGUAGE RULE ★★★
+Your ENTIRE response MUST be written COMPLETELY in ${langName} language using its native script.
+- If ${langName} is Tamil → Write EVERYTHING in Tamil script (தமிழ்). Fertilizer names like "Urea" = "யூரியா", "DAP" can stay, "Basal Application" = "அடிப்படை உரமிடுதல்"
+- If ${langName} is Hindi → Write EVERYTHING in Devanagari. "Urea" = "यूरिया", "Broadcasting" = "छिड़काव"
+- ALL fertilizer names MUST be transliterated into ${langName} script.
+- ALL method descriptions MUST be in ${langName}.
+- ALL timing descriptions MUST be in ${langName}.
+- ALL schedule stage names and descriptions MUST be in ${langName}.
+- The ONLY things allowed in English/Latin script are: chemical formulas (NPK, DAP, MOP, ZnSO4), units (kg/ha, g/L), and numbers.
+- ABSOLUTELY NO English sentences, phrases, or words anywhere else in the response.
 
-Format as JSON with "fertilizers" array and "schedule" array.`;
+Format as JSON with "fertilizers" array and "schedule" array. ALL text values in the JSON must be in ${langName}.`;
 
         userPrompt = `Fertilizer plan for:
 Crop: ${data.crop || 'Not specified'}
@@ -223,7 +229,7 @@ Organic Carbon: ${data.organicCarbon || 'N/A'}%
 Target Yield: ${data.targetYield || 'Moderate'}
 Irrigation: ${data.irrigation || 'Rainfed'}
 
-IMPORTANT: Your ENTIRE response must be in ${langName}. All field names, descriptions, methods, timing labels - EVERYTHING in ${langName}.`;
+★★★ MANDATORY: Your ENTIRE response - every fertilizer name, method, timing, stage, description - ALL must be in ${langName} script. NO English words allowed except chemical formulas and units.`;
         messages = [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }];
         break;
 
