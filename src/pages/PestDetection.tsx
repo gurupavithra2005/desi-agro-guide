@@ -268,7 +268,8 @@ const pestTranslations: Record<string, Record<string, string>> = {
     fileTooLarge: 'ਫ਼ਾਈਲ ਬਹੁਤ ਵੱਡੀ', fileTooLargeDesc: '5MB ਤੋਂ ਘੱਟ', errorTitle: 'ਗਲਤੀ', errorDesc: 'ਫ਼ਸਲ ਚੁਣੋ', analysisComplete: 'ਵਿਸ਼ਲੇਸ਼ਣ ਪੂਰਾ', imageAnalyzed: 'AI ਨਾਲ ਵਿਸ਼ਲੇਸ਼ਣ ਹੋਇਆ!', pestIdentified: 'ਪਛਾਣੀ ਗਈ!', failedAnalysis: 'ਵਿਸ਼ਲੇਸ਼ਣ ਅਸਫਲ',
     leaves: 'ਪੱਤੇ', stem: 'ਤਣਾ', roots: 'ਜੜ੍ਹਾਂ', fruits: 'ਫਲ', flowers: 'ਫੁੱਲ', wholePlant: 'ਪੂਰਾ ਪੌਦਾ',
     historyTitle: 'ਵਿਸ਼ਲੇਸ਼ਣ ਇਤਿਹਾਸ', noHistory: 'ਅਜੇ ਕੋਈ ਵਿਸ਼ਲੇਸ਼ਣ ਨਹੀਂ', viewHistory: 'ਇਤਿਹਾਸ ਦੇਖੋ', hideHistory: 'ਇਤਿਹਾਸ ਲੁਕਾਓ',
-    refGalleryTitle: 'ਬਿਮਾਰੀ ਸੰਦਰਭ ਗਾਈਡ', refGalleryDesc: 'ਪਛਾਣ ਲਈ CNN & AI ਮਾਡਲ', refFungal: 'ਫੰਗਲ ਅਤੇ ਬੈਕਟੀਰੀਆ ਬਿਮਾਰੀਆਂ', refInsects: 'ਕੀੜੇ ਨੁਕਸਾਨ', refViral: 'ਵਾਇਰਲ ਬਿਮਾਰੀਆਂ', refDeficiency: 'ਪੋਸ਼ਕ ਤੱਤ ਘਾਟ ਲੱਛਣ',
+     refGalleryTitle: 'ਬਿਮਾਰੀ ਸੰਦਰਭ ਗਾਈਡ', refGalleryDesc: 'ਪਛਾਣ ਲਈ CNN & AI ਮਾਡਲ', refFungal: 'ਫੰਗਲ ਅਤੇ ਬੈਕਟੀਰੀਆ ਬਿਮਾਰੀਆਂ', refInsects: 'ਕੀੜੇ ਨੁਕਸਾਨ', refViral: 'ਵਾਇਰਲ ਬਿਮਾਰੀਆਂ', refDeficiency: 'ਪੋਸ਼ਕ ਤੱਤ ਘਾਟ ਲੱਛਣ',
+    translateBtn: 'ਪੰਜਾਬੀ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ', translating: 'ਅਨੁਵਾਦ ਹੋ ਰਿਹਾ...',
   },
   mr: {
     pageTitle: 'कीड आणि रोग ओळख', aiPowered: 'AI-चालित ओळख',
