@@ -134,7 +134,7 @@ const fertTranslations: Record<string, Record<string, string>> = {
     targetYield: 'இலக்கு மகசூல்',
     moderate: 'நடுத்தர',
     high: 'அதிக',
-    das: 'DAS',
+    das: 'DAS', translateBtn: 'தமிழில் மொழிபெயர்க்கவும்', translating: 'மொழிபெயர்க்கிறது...',
   },
   te: {
     stcrTitle: 'STCR ఆధారిత సిఫార్సులు', stcrDesc: 'మట్టి పరీక్ష ఫలితాల ఆధారంగా వ్యక్తిగత ఎరువుల సలహా పొందండి.',
