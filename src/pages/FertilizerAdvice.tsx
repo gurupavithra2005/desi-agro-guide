@@ -197,6 +197,7 @@ export default function FertilizerAdvice() {
   const { t, language } = useLanguage();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [recommendations, setRecommendations] = useState<FertilizerRecommendation[]>([]);
   const [schedule, setSchedule] = useState<any[]>([]);
 
