@@ -316,7 +316,11 @@ Affected Part: ${data.affectedPart || 'Leaves'}
 Spread Pattern: ${data.spread || 'Not specified'}
 Duration: ${data.duration || 'Not specified'}${hfClassification}
 
-CRITICAL REMINDER: You MUST provide a specific disease/pest name. "Unknown" is NOT acceptable. Use the diagnosis decision tree and CNN results to determine the most likely disease. If truly no disease is present, say "Healthy Plant - No Disease Detected". YOUR ENTIRE RESPONSE MUST BE IN ${langName} - all descriptions, treatment names, prevention tips, everything in ${langName} script.`;
+★★★ MANDATORY ★★★
+1. You MUST provide a specific disease/pest name - "Unknown" is FORBIDDEN.
+2. YOUR ENTIRE JSON RESPONSE - every single field value including "pest", "description", "treatment", "organic_alternatives", "prevention" - MUST be written COMPLETELY in ${langName} using ${langName} script.
+3. DO NOT write any English words in the values. Translate disease names: e.g., "Cercospora Leaf Spot" → Tamil: "செர்கோஸ்போரா இலைப்புள்ளி நோய்", Hindi: "सर्कोस्पोरा पत्ती धब्बा रोग".
+4. Only chemical formulas, scientific names in parentheses, and units (kg/ha) may remain in English.`;
 
         if (data.imageBase64) {
           messages = [
