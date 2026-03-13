@@ -155,7 +155,8 @@ const fertTranslations: Record<string, Record<string, string>> = {
     analyzing: 'ವಿಶ್ಲೇಷಣೆ...', getAdvice: 'ಗೊಬ್ಬರ ಸಲಹೆ ಪಡೆಯಿರಿ', resultsTitle: 'ಶಿಫಾರಸು ಮಾಡಿದ ಗೊಬ್ಬರಗಳು', method: 'ವಿಧಾನ', estCost: 'ಅಂದಾಜು ವೆಚ್ಚ', scheduleTitle: 'ಬಳಕೆ ವೇಳಾಪಟ್ಟಿ',
     error: 'ದೋಷ', errorDesc: 'ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ', success: 'ಯಶಸ್ಸು', successDesc: 'ಗೊಬ್ಬರ ಶಿಫಾರಸು ಸಿದ್ಧ!',
     basal: 'ಬೇಸಲ್ (ಬಿತ್ತನೆಗೆ ಮುನ್ನ)', vegetative: 'ಸಸ್ಯ ಹಂತ', flowering: 'ಹೂಬಿಡುವ ಹಂತ', fruiting: 'ಹಣ್ಣಾಗುವ ಹಂತ',
-    irrigation: 'ನೀರಾವರಿ', rainfed: 'ಮಳೆ ಆಧಾರಿತ', irrigated: 'ನೀರಾವರಿ', targetYield: 'ಗುರಿ ಇಳುವರಿ', moderate: 'ಮಧ್ಯಮ', high: 'ಹೆಚ್ಚು', das: 'DAS',
+     irrigation: 'ನೀರಾವರಿ', rainfed: 'ಮಳೆ ಆಧಾರಿತ', irrigated: 'ನೀರಾವರಿ', targetYield: 'ಗುರಿ ಇಳುವರಿ', moderate: 'ಮಧ್ಯಮ', high: 'ಹೆಚ್ಚು', das: 'DAS',
+    translateBtn: 'ಕನ್ನಡಕ್ಕೆ ಅನುವಾದಿಸಿ', translating: 'ಅನುವಾದಿಸಲಾಗುತ್ತಿದೆ...',
   },
   bn: {
     stcrTitle: 'STCR ভিত্তিক সুপারিশ', stcrDesc: 'মাটি পরীক্ষার ফলাফলের ভিত্তিতে ব্যক্তিগত সার পরামর্শ পান।',
