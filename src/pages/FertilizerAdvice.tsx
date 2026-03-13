@@ -563,6 +563,24 @@ export default function FertilizerAdvice() {
         </PageSection>
       )}
 
+      {/* Translate Button */}
+      {(recommendations.length > 0 || schedule.length > 0) && language !== 'en' && (
+        <PageSection>
+          <Button
+            onClick={handleTranslateResult}
+            disabled={isTranslating}
+            variant="outline"
+            className="w-full h-12 gap-2 border-primary text-primary hover:bg-primary/10"
+          >
+            {isTranslating ? (
+              <><Loader2 className="w-4 h-4 animate-spin" />{ft.translating}</>
+            ) : (
+              <><Languages className="w-5 h-5" />{ft.translateBtn}</>
+            )}
+          </Button>
+        </PageSection>
+      )}
+
       <BottomNav />
     </PageContainer>
   );
