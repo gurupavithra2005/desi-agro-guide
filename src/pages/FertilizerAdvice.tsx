@@ -296,8 +296,23 @@ export default function FertilizerAdvice() {
       if (error) throw error;
 
       if (data?.success && data?.data) {
-        setRecommendations(data.data.fertilizers || []);
-        setSchedule(data.data.schedule || []);
+        // Normalize field names in case AI uses different keys
+        const rawFerts = data.data.fertilizers || [];
+        const normalizedFerts = rawFerts.map((f: any) => ({
+          name: f.name || f.type || f.fertilizer || '',
+          quantity: f.quantity || f.quantity_kg_per_ha || f.dose || '',
+          timing: f.timing || f.timing_days_after_sowing || f.application_timing || '',
+          method: f.method || f.application_method || f.application || '',
+          cost: f.cost || f.cost_estimate || f.price || '',
+        }));
+        const rawSchedule = data.data.schedule || [];
+        const normalizedSchedule = rawSchedule.map((s: any) => ({
+          stage: s.stage || s.timing || s.phase || '',
+          description: s.description || s.fertilizer || s.details || '',
+          days: s.days || s.day || s.das || '',
+        }));
+        setRecommendations(normalizedFerts);
+        setSchedule(normalizedSchedule);
         toast({ title: ft.success, description: ft.successDesc });
       } else {
         throw new Error(data?.error || 'Failed to get recommendations');
