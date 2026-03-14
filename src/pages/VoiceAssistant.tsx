@@ -161,11 +161,20 @@ export default function VoiceAssistant() {
     try {
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-assistant`;
       
+      const { data: { session } } = await (await import('@/integrations/supabase/client')).supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Please log in to use the assistant.' });
+        setIsLoading(false);
+        return;
+      }
+
       const response = await fetch(CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          'Authorization': `Bearer ${token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
         body: JSON.stringify({
           messages: messages.map(m => ({ role: m.role, content: m.content })).concat([{ role: 'user', content: input.trim() }]),
