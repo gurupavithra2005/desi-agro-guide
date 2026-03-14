@@ -204,7 +204,19 @@ Provide 5-6 recommendations with fertilizer doses. Your ENTIRE response must be 
 ${ICAR_KNOWLEDGE}
 
 Provide precise fertilizer recommendations with split application schedules.
-For each fertilizer: type, quantity_kg_per_ha, application_method, timing_days_after_sowing, cost_estimate.
+
+## ★★★ CRITICAL JSON FIELD NAMES - MUST USE EXACTLY THESE ★★★
+Return JSON with this EXACT structure:
+{
+  "fertilizers": [
+    { "name": "Urea", "quantity": "130 kg/ha", "timing": "Split in 3 doses", "method": "Broadcasting", "cost": "₹800/acre" }
+  ],
+  "schedule": [
+    { "stage": "Basal", "description": "Apply 50% P and 50% K before sowing", "days": "0" }
+  ]
+}
+Field names MUST be exactly: name, quantity, timing, method, cost (for fertilizers) and stage, description, days (for schedule).
+DO NOT use type, quantity_kg_per_ha, application_method, timing_days_after_sowing, or cost_estimate.
 
 ## ★★★ CRITICAL LANGUAGE RULE ★★★
 Your ENTIRE response MUST be written COMPLETELY in ${langName} language using its native script.
