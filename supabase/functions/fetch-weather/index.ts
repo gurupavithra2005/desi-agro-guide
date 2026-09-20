@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -33,6 +34,26 @@ serve(async (req) => {
   }
 
   try {
+    // Require an authenticated caller
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const authClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const token = authHeader.replace("Bearer ", "");
+    const { data: userData, error: userError } = await authClient.auth.getUser(token);
+    if (userError || !userData?.user) {
+      return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { lat, lon, district } = await req.json();
     const API_KEY = Deno.env.get("OPENWEATHER_API_KEY");
 
@@ -152,7 +173,7 @@ serve(async (req) => {
     console.error("Weather error:", error);
     return new Response(JSON.stringify({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: "An internal error occurred. Please try again later.",
     }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
